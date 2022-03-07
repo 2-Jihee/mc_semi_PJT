@@ -37,6 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'common',
+    'user',
+    'home',
+    'mbti',
+    'movie',
+    'place',
+    'hobby',
 ]
 
 MIDDLEWARE = [
@@ -119,7 +126,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = []
+STATICFILES_DIRS = [
+    BASE_DIR / 'common' / 'static'
+]
 
 STATIC_ROOT = BASE_DIR / 'static'
 

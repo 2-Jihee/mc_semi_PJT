@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MBTI.gg: {{title}}</title>
+    <link rel="stylesheet" href="{% static '/assets/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static '/assets/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static '/assets/css/prism-okaidia.css' %}">
+    <link rel="stylesheet" href="{% static '/assets/css/custom.min.css' %}">
+    <!-- Global Site Tag (gtag.js) - Google Analytics -->
+    <script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script>
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-23019901-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-23019901-1');
+    </script>
+    <script id="_carbonads_projs" type="text/javascript" src="https://srv.carbonads.net/ads/CKYIE23N.json?segment=placement:bootswatchcom&amp;callback=_carbonads_go"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="../">MBTI.gg</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link{% if nav_link_active == 'home' %} active{% endif %}" href="../home{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">Home{% if nav_link_active == 'home' %}<span class="visually-hidden">(current)</span>{% endif %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if nav_link_active == 'mbti' %} active{% endif %}" href="../mbti{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">MBTI{% if nav_link_active == 'mbti' %}<span class="visually-hidden">(current)</span>{% endif %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if nav_link_active == 'movie' %} active{% endif %}" href="../movie{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">영화·드라마{% if nav_link_active == 'movie' %}<span class="visually-hidden">(current)</span>{% endif %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if nav_link_active == 'place' %} active{% endif %}" href="../place{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">여행지{% if nav_link_active == 'place' %}<span class="visually-hidden">(current)</span>{% endif %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if nav_link_active == 'hobby' %} active{% endif %}" href="../hobby{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">취미{% if nav_link_active == 'hobby' %}<span class="visually-hidden">(current)</span>{% endif %}</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-md-auto">
+                    <li class="nav-item">
+                        <a target="_blank" rel="noopener" class="nav-link" href="../login">로그인</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{% if selected_mbti == '' %}MBTI를 선택하세요{% else %}{{selected_mbti}}{% endif %}<span class="caret"></span></a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="./?mbti=xNTx"><strong>xNTx: 분석가형</strong></a>
+                            <a class="dropdown-item" href="./?mbti=INTJ">· INTJ: 용의주도한 전략가</a>
+                            <a class="dropdown-item" href="./?mbti=INTP">· INTP: 논리적인 사색가</a>
+                            <a class="dropdown-item" href="./?mbti=ENTJ">· ENTJ: 대담한 통솔자</a>
+                            <a class="dropdown-item" href="./?mbti=ENTP">· ENTP: 뜨거운 논쟁을 즐기는 변론가</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="./?mbti=xNFx"><strong>xNFx: 외교관형</strong></a>
+                            <a class="dropdown-item" href="./?mbti=INFJ">· INFJ: 선의의 옹호자</a>
+                            <a class="dropdown-item" href="./?mbti=INFP">· INFP: 열정적인 중재자</a>
+                            <a class="dropdown-item" href="./?mbti=ENFJ">· ENFJ: 정의로운 사회운동가</a>
+                            <a class="dropdown-item" href="./?mbti=ENFP">· ENFP: 재기발랄한 활동가</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="./?mbti=xSxJ"><strong>xSxJ: 관리자형</strong></a>
+                            <a class="dropdown-item" href="./?mbti=ISTJ">· ISTJ: 청렴결백한 논리주의자</a>
+                            <a class="dropdown-item" href="./?mbti=ISFJ">· ISFJ: 용감한 수호자</a>
+                            <a class="dropdown-item" href="./?mbti=ESTJ">· ESTJ: 엄격한 관리자</a>
+                            <a class="dropdown-item" href="./?mbti=ESFJ">· ESFJ: 사교적인 외교관</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="./?mbti=xSxP"><strong>xSxP: 탐험가형</strong></a>
+                            <a class="dropdown-item" href="./?mbti=ISTP">· ISTP: 만능 재주꾼</a>
+                            <a class="dropdown-item" href="./?mbti=ISFP">· ISFP: 호기심 많은 예술가</a>
+                            <a class="dropdown-item" href="./?mbti=ESTP">· ESTP: 모험을 즐기는 사업가</a>
+                            <a class="dropdown-item" href="./?mbti=ESFP">· ESFP: 자유로운 영혼의 연예인</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if nav_link_active == 'user' %} active{% endif %}" href="../user{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">회원정보{% if nav_link_active == 'user' %}<span class="visually-hidden">(current)</span>{% endif %}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <script src="{% static '/assets/js/jquery.min.js' %}"></script>
+    <script src="{% static '/assets/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static '/assets/js/prism.js' %}" data-manual=""></script>
+    <script src="{% static '/assets/js/custom.js' %}"></script>
+</body>
+</html>
