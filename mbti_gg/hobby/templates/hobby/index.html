@@ -1,16 +1,99 @@
 {% include 'header.html' %}
 
 {% block content %}
-
-<html>
 <body>
-    <div class="container">
-        Hobby - index</br>
-        Selected MBTI: {{selected_mbti}}
+    <section class="py-5 text-center container bg-light">
+      <div class="row py-lg-5">
+        <div class="col-lg-6 col-md-8 mx-auto">
+          <h1 class="fw-light" style="text-transform:uppercase">{{selected_mbti}}</h1>
+          <p class="lead text-muted">{{mbti_table.profile}}</p>
+        </div>
+      </div>
+    </section>
+    <div class="album py-5">
+            <div class="container">
+              <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                {% for hobby in hobbys %}
+                  {% if hobby.user_id.mbti_id.mbti_id == selected_mbti%}
+                    {% if hobby.user_id.user_id == 'admin'%}
+                      <div class="col">
+                        <div class="card shadow-sm">
+                          <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false">
+                            <a href="{{hobby.info}}">
+                              <image xlink:href="{{hobby.photo}}" x="0"y="0" height="225" width="100%"/>
+                            </a>
+                          </svg>
+                          <div class="card-body">
+                            <p class="card-text">{{hobby.title}}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-outline-secondary">HEART</button>
+                              </div>
+                              {% for like in liked_count%}
+                                {%if hobby.hobby_id == like.hobby_id%}
+                                  <small class="text-muted">{{like.hobby_count}}</small>
+                                {% endif%}
+                              {% endfor%}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+    <div class="user_rmd py-5 container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Content</th>
+            <th scope="col">Heart</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for hobby in hobbys %}
+            {% if hobby.user_id.mbti_id.mbti_id == selected_mbti%}
+              {% if hobby.user_id.user_id != 'admin'%}
+                {% for like in liked_count%}
+                  {%if hobby.hobby_id == like.hobby_id%}
+                    <tr>
+                      <th scope="row">{{hobby.user_id.name}}</th>
+                      <td>{{hobby.title}}</td>
+                      <td>{{like.hobby_count}}</td>
+                    </tr>
+                  {% endif%}
+                {% endfor%}
+              {%endif%}
+            {%endif%}
+          {% endfor%}
+        </tbody>
+      </table>
+      {% if user_mbti == selected_mbti%}
+      <form action="#" method="POST">
+        {% csrf_token%}
+        <div class="mb-3">
+          <label for="Hobby_user_rmd" class="form-label">{{user_name}}</label>
+          <input type="text" class="form-control" id="Hobby_user_rmd">
+        </div>
+        <button type="submit" class="btn btn-primary">추천</button>
+      </form>
+      {%endif%}
+    </div>
+    <div class="hobby_comment py-5 container" >
+    <form action="#" method="POST">
+      {% csrf_token%}
+      <div class="mb-3">
+        <label for="user_comment" class="form-label">{{user_name}}</label>
+        <input type="text" class="form-control" id="user_comment">
+      </div>
+      <button type="submit" class="btn btn-primary">등록</button>
+
+    </form>
     </div>
 </body>
-</html>
-
 {% endblock %}
 
 {% include 'footer.html'%}
