@@ -9,10 +9,15 @@ class User(models.Model):
     pwd = models.CharField(max_length=50)
     mbti_id = models.ForeignKey('mbti.Mbti', on_delete=models.PROTECT, db_column='mbti_id')
     birth_dt = models.DateField(null=True, blank=True)
-    gender = models.CharField(max_length=1)
-
-    class Meta:
-        constraints = [
-            models.CheckConstraint(check=Q(gender__in='M' or 'F'), name='gender')
-        ]
+    GENDER_CHOICES = (
+        ('M', 'Man'),
+        ('F', 'Female')
+    )
+    gender = models.CharField(max_length=1, null=True, choices=GENDER_CHOICES )
+    # gender = models.CharField(max_length=1)
+    #
+    # class Meta:
+    #     constraints = [
+    #         models.CheckConstraint(check=Q(gender__in='M' or 'F'), name='gender')
+    #     ]
 
