@@ -1,0 +1,61 @@
+{% include 'header.html' %}
+
+{% block content %}
+
+<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div>
+        <input type="hidden" name="nno" id="nno" value="{{n_board.nno}}">
+
+        <label>제목</label>
+            <input type="text" name="title" id="title" value="{{n_board.title}}">
+    </div>
+    <div>
+        <label>작성자</label>
+            <input type="text" name="writer"id ='writer' value="{{n_board.writer}}" readonly >
+    </div>
+    <div>
+        <label>CONTENT</label>
+            <textarea name="content" id="content">
+                {{n_board.content}}
+            </textarea>
+    </div>
+    <div align="center">
+        <button type="button" id="del_btn">삭제</button>
+        <button type="button" id="mod_btn">수정</button>
+        <button type="button" id="lst_btn">목록</button>
+    </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#lst_btn').click(function() {
+            alert('목록으로 돌아갑니다.')
+            location.href = '../' ;
+        });
+        $('#del_btn').click(function() {
+            alert('글을 삭제합니다.')
+            notice_nno     = $('#nno').val()
+            location.href  = '../notice_delete?nno='+notice_nno
+        });
+        $('#mod_btn').click(function() {
+            alert('글을 수정합니다.')
+            notice_nno     = $('#nno').val()
+            notice_title   = $('#title').val()
+            notice_content = $('#content').val()
+            location.href  = '../notice_modify?nno='+notice_nno+'&title='+notice_title+'&content='+notice_content ;
+        });
+    })
+</script>
+
+</body>
+</html>
+
+{% endblock %}
+
+{% include 'footer.html'%}
