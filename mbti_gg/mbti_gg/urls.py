@@ -26,4 +26,5 @@ urlpatterns = [
     path('place/', include('place.urls')),
     path('hobby/', include('hobby.urls')),
     path('user/', include('user.urls')),
+    path('notice/', include('notice.urls')),
 ]

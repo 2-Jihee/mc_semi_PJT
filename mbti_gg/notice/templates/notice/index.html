@@ -1,0 +1,41 @@
+{% include 'header.html' %}
+
+{% block content %}
+
+<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div align="center">
+        <table>
+            <tr>
+                <td>NO</td>
+                <td>제목</td>
+                <td>작성자</td>
+                <td>작성일</td>
+                <td>조회</td>
+            </tr>
+            {% for i in n_boards %}
+            <tr>
+                <td>{{i.nno}}</td>
+                <td><a href="notice_read?nno={{i.nno}}">{{i.title}}</a></td>
+                <td>{{i.writer}}</td>
+                <td>{{i.regdate}}</td>
+                <td>{{i.viewcnt}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <p/>
+    <div align="center">
+        <a href="writing_form">글쓰기</a>
+    </div>
+</body>
+</html>
+
+{% endblock %}
+
+{% include 'footer.html'%}
