@@ -8,8 +8,8 @@ class Hobby(models.Model):
     hobby_id = models.BigAutoField(primary_key=True)
     title = models.CharField(max_length=50)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE, db_column='user_id', default='admin')
-    info = models.TextField(null=True)
-    photo = models.TextField(null=True)
+    info = models.TextField(null=True, blank=True)
+    photo = models.TextField(null=True, blank=True)
 
 
 class HobbyComment(models.Model):
