@@ -11,40 +11,40 @@
     </div>
   </section>
   <div class="album py-5">
-          <div class="container">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-              {% for hobby in hobbys %}
-                {% if hobby.user_id.mbti_id.mbti_id == selected_mbti%}
-                  {% if hobby.user_id.user_id == 'admin'%}
-                    <div class="col">
-                      <div class="card shadow-sm">
-                        <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false">
-                          <a href="{{hobby.info}}">
-                            <image xlink:href="{{hobby.photo}}" x="0"y="0" height="225" width="100%"/>
-                          </a>
-                        </svg>
-                        <div class="card-body">
-                          <p class="card-text">{{hobby.title}}</p>
-                          <div class="d-flex justify-content-between align-items-center">
-                            <div class="btn-group">
-                              <input type="button" name="{{hobby.hobby_id}}" class="btn like btn-sm btn-outline-secondary" value="HEART">
-                              <input type="hidden" name="{{hobby.user_id.user_id}}" id="user_like">
-                            </div>
-                            {% for like in liked_count%}
-                              {%if hobby.hobby_id == like.hobby_id%}
-                                <small class="text-muted count-{{hobby.hobby_id}}">{{like.hobby_count}}</small>
-                              {% endif%}
-                            {% endfor%}
-                          </div>
-                        </div>
+    <div class="container">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        {% for hobby in hobbys %}
+          {% if hobby.user_id.mbti_id.mbti_id == selected_mbti%}
+            {% if hobby.user_id.user_id == 'admin'%}
+              <div class="col">
+                <div class="card shadow-sm">
+                  <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false">
+                    <a href="{{hobby.info}}">
+                      <image xlink:href="{{hobby.photo}}" x="0"y="0" height="225" width="100%"/>
+                    </a>
+                  </svg>
+                  <div class="card-body">
+                    <p class="card-text">{{hobby.title}}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="btn-group">
+                        <input type="button" name="{{hobby.hobby_id}}" class="btn like btn-sm btn-outline-secondary" value="HEART">
+                        <input type="hidden" name="{{hobby.user_id.user_id}}" id="user_like">
                       </div>
+                      {% for like in liked_count%}
+                        {%if hobby.hobby_id == like.hobby_id%}
+                          <small class="text-muted count-{{hobby.hobby_id}}">{{like.hobby_count}}</small>
+                        {% endif%}
+                      {% endfor%}
                     </div>
-                  {% endif %}
-                {% endif %}
-              {% endfor %}
-            </div>
-          </div>
-        </div>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
   <div class="user_rmd py-5 container">
     <table class="table">
       <thead>
@@ -54,34 +54,32 @@
           <th scope="col">Heart</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="tbody">
         {% for hobby in hobbys %}
           {% if hobby.user_id.mbti_id.mbti_id == selected_mbti%}
             {% if hobby.user_id.user_id != 'admin'%}
-              {% for like in liked_count%}
-                {%if hobby.hobby_id == like.hobby_id%}
-                  <tr>
-                    <th scope="row">{{hobby.user_id.name}}</th>
-                    <td>{{hobby.title}}</td>
-                    <td>{{like.hobby_count}}</td>
-                  </tr>
-                {% endif%}
-              {% endfor%}
+              <tr>
+                <th scope="row">{{hobby.user_id.name}}</th>
+                <td>{{hobby.title}}</td>
+                {% for like in liked_count%}
+                  {%if hobby.hobby_id == like.hobby_id%}
+                    <td class="rmd_count">{{like.hobby_count}}</td>
+                  {% endif%}
+                {% endfor%}
+              </tr>
             {%endif%}
           {%endif%}
         {% endfor%}
       </tbody>
     </table>
-    {% if user_mbti == selected_mbti%}
-    <form action="#" method="POST">
-      {% csrf_token%}
-      <div class="mb-3">
-        <label for="Hobby_user_rmd" class="form-label">{{user_name}}</label>
-        <input type="text" class="form-control" id="Hobby_user_rmd">
-      </div>
-      <button type="submit" class="btn btn-primary">추천</button>
-    </form>
-    {%endif%}
+<!--user_mbti 와 select_mbti 일치하는 조건문 입력 label에 유저의 이름 갖고오는걸로 변경해야 한다.-->
+    {% csrf_token%}
+    <div class="mb-3">
+      <label for="user_rmd" class="user_name form-label">PHS</label>
+      <input type="text" class="form-control" id="user_rmd">
+    </div>
+    <button type="submit" class="btn btn-primary like_submit">추천</button>
+
   </div>
   <div class="hobby_comment py-5 container" >
   <form action="#" method="POST">
@@ -113,7 +111,41 @@
           $('.count-'+hk).html(response.like_count)
         }
       });
-
+    })
+  </script>
+  <script type="text/javascript">
+    $('.like_submit').click(function(){
+      var title = $('#user_rmd').val()
+      var id = $('#user_rmd').attr("id");
+      var label_text = $("label[for='"+id+"']").text();
+      $.ajax({
+        url: './like_submit/',
+        type: 'POST',
+        data: {
+          'csrfmiddlewaretoken' : '{{csrf_token}}',
+          'title' : title,
+          'label_text' : label_text
+        },
+        dataType: 'json',
+        success:function(response){
+          if(response.message){
+            alert(response.message)
+            $('.rmd_count').html(response.like_count)
+          }
+          else{
+            $('#tbody').empty()
+            var txt = ""
+            $.each(response, function(idx, data){
+              txt += "<tr><th scope = 'row'>"+data.user_name+"</th>"
+              txt += "<td>"+data.title+"</td>"
+              txt += "<td>"+data.like_count+"</td>"
+              txt += "</tr>"
+            })
+            $('#tbody').append(txt)
+            console.log('NoNoNoNo')
+          }
+        }
+      });
     })
   </script>
 </body>
