@@ -1,5 +1,5 @@
 from django.http import JsonResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect,reverse
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.db.models import Count, F
 from .models import *
 from mbti.models import *
@@ -12,16 +12,15 @@ def index(request):
         selected_mbti = request.GET['mbti']
         hobbys = Hobby.objects.all()
         mbti_table = Mbti.objects.get(mbti_id=selected_mbti)
-        # hobby_all = Hobby.objects.select_related('user_id').all()
-        # print('⛔️ request check', hobby_all)
-        # print('⛔️ request check', hobbys)
-        # for hobby in hobby_all:
-        #     print(hobby.user_id.name)
-        liked_count = HobbyLiked.objects.values('hobby_id').annotate(Count('hobby_id'))
-        # 이거 생각해보기 print로는 0 나옴. = > like_count = HobbyLiked.objects.filter(hobby_id=h_id).count()
-        # print('⛔️ like check',liked_count)
-        # for like in liked_count:
-        #     print('⛔️ like check',like['hobby_id'],like)
+        likes = HobbyLiked.objects.all()
+        # 0을 구성했다.. 문제는... hobbyliked에 해당 hobby_ID가 심어져야지 확인이 가능하다..
+        # 그래서 다른 예시들 보면 hobby main table에 심어 놓는 이유가 이거 때문이다...
+        # 이렇게 모델과 뷰를 구성하게 되면 굳이 hobby_liked table이 필요한 이유가 있을 까??
+        # for like in likes:
+        #     l = like.like_user.all()
+        #     print('≈,l)
+        #     t = like.hobby_id
+        #     print('⛔️ request check:',t)
         user_mbti = request.session.get('user_mbti')
         user_name = request.session.get('user_name')
         context = {
@@ -32,7 +31,7 @@ def index(request):
             'mbti_table' : mbti_table,
             'user_mbti': user_mbti,
             'user_name': user_name,
-            'liked_count' : liked_count,
+            'likes' : likes,
         }
 
         return render(request, 'hobby/index.html', context)
@@ -42,33 +41,26 @@ def index(request):
             'selected_mbti': selected_mbti,
         }
         return render(request, 'hobby/select_mbti.html', context)
-# 0을 표시하는 방법이 필요한 듯 하다...
 
 def like(request):
     print('✅ GET Hobby Like Btn🚀')
-    hk = request.POST['hk']
-    uk = request.POST['uk']
-    try:
-        liked=HobbyLiked.objects.get(user_id=uk,hobby_id=hk)
-        liked.delete()
-        like_count = HobbyLiked.objects.filter(hobby_id=hk).count()
-        context = {
-            'message' : '좋아요 취소',
-            'like_count' : like_count
-        }
-        return JsonResponse(context)
-    except HobbyLiked.DoesNotExist:
-        obj = HobbyLiked.objects.create(
-            hobby_id = Hobby.objects.get(hobby_id=int(hk)),
-            user_id = User.objects.get(user_id=uk)
-        )
-        obj.save()
-        like_count = HobbyLiked.objects.filter(hobby_id=hk).count()
-        context = {
-            'message' : '좋아요',
-            'like_count' : like_count
-        }
-        return JsonResponse(context)
+    pk = request.POST.get('hk', None)
+    ls = Hobby.objects.get(hobby_id=pk)
+    uk = request.POST.get('uk', None)
+    hobby_like = get_object_or_404(HobbyLiked, hobby_id=ls)
+
+    if hobby_like.like_user.filter(user_id=uk).exists():
+        hobby_like.like_user.remove(uk)
+        message = '좋아요 취소'
+    else:
+        hobby_like.like_user.add(uk)
+        message = '좋아요'
+    context = {
+        'like_count' : hobby_like.total_like_user(),
+        'message' : message
+    }
+    return JsonResponse(context)
+
     # 개같이 성공했음...
     # 참조 : https://wayhome25.github.io/django/2017/06/25/django-ajax-like-button/
     # 참조 : https://jisun-rea.tistory.com/entry/Django-%EC%A2%8B%EC%95%84%EC%9A%94likes-%EA%B8%B0%EB%8A%A5-%EA%B5%AC%ED%98%84%ED%95%98%EA%B8%B0
@@ -76,59 +68,51 @@ def like(request):
 def rmd_submit(request):
     print('✅ GET User Recommend Hobby Btn🚀')
     title = request.POST['title']
-    user_name = request.POST['label_text']
+    user_name = request.POST.get('label_text',None)
     try:  # Hobby의 타이틀이 있다면 hobby_liked table에 좋아요를 생성
-        hobby = Hobby.objects.get(title=title)
-        h_id = hobby.hobby_id
-        try :  # hobby_liked table에 user_id 와 hobby_id가 있을 경우
-            user = User.objects.get(name=user_name)
-            u_id = user.user_id
-            liked = HobbyLiked.objects.get(user_id=u_id, hobby_id=h_id)
-            print('⛔️ Dislike target : ', liked.user_id,liked.hobby_id.title)
-            liked.delete()
-            like_count = HobbyLiked.objects.filter(hobby_id=h_id).count()
-            context = {
-                'message': '좋아요 취소',
-                'like_count': like_count
-            }
-            return JsonResponse(context)
-        except: # hobby_liked table에 user_id 와 hobby_id가 없을 경우
-            user = User.objects.get(name=user_name)
-            u_id = user.user_id
-            obj = HobbyLiked.objects.create(
-                hobby_id=Hobby.objects.get(hobby_id=h_id),
-                user_id=User.objects.get(user_id=u_id)
-            )
-            obj.save()
-            print('⛔️ Like target : ', obj.user_id, obj.hobby_id.title)
-            like_count = HobbyLiked.objects.filter(hobby_id=h_id).count()
-            context = {
-                'message': '좋아요',
-                'like_count': like_count
-            }
-            return JsonResponse(context)
+        pk = Hobby.objects.get(title=title)
+        target_id = pk.hobby_id
+        user = User.objects.get(name=user_name)
+        uk = user.user_id
+        print('request check:', uk, user, target_id, pk, title)
+        hobby_like = get_object_or_404(HobbyLiked, hobby_id=pk)
+        if hobby_like.like_user.filter(user_id=uk).exists():
+            print('⛔️ Does Exist title')
+            hobby_like.like_user.remove(uk)
+            message = '좋아요 취소'
+        else:
+            hobby_like.like_user.add(uk)
+            message = '좋아요'
+        context = {
+            'like_count': hobby_like.total_like_user(),
+            'message': message,
+            'target_id':target_id
+        }
+        return JsonResponse(context)
     except:  # hobby의 title이 일치하는게 없으면 hobby에 데이터를 추가!
         print('⛔️ DoesNotExist title')
         user = User.objects.get(name=user_name)
-        user_id = user.user_id
+        uk = user.user_id
         new_data = Hobby.objects.create(
             title=title,
-            user_id = User.objects.get(user_id = user_id)
+            user_id = User.objects.get(user_id = uk)
         )
         new_data.save()
+        new_liked = HobbyLiked.objects.create(
+            hobby_id=Hobby.objects.get(title=title)
+        )
+        new_liked.save()
         hobbys = Hobby.objects.all()
         jsonAry=[]
         for hobby in hobbys:
             if hobby.user_id.user_id != 'admin':
+                like = get_object_or_404(HobbyLiked, hobby_id=hobby.hobby_id)
                 jsonAry.append({
                     'title':hobby.title,
                     'user_name':hobby.user_id.name,
-                    'like_count': HobbyLiked.objects.filter(hobby_id=hobby.hobby_id).count()
+                    'like_count': like.total_like_user(),
+                    'target_id': hobby.hobby_id
                 })
         print(jsonAry)
         return JsonResponse(jsonAry, safe=False)
-# 왜 좋아요 취소하면 다른 좋아요도 다 같이 취소될까... 근데 새로고침하면 또 안 사라져있음...
-# html쪽에는 문제가 아닌 것같음... 아마 views쪽에서 잘 못 건들인것 같음...
-
-
-
+# 다 구성 완료

@@ -28,11 +28,11 @@
                     <div class="d-flex justify-content-between align-items-center">
                       <div class="btn-group">
                         <input type="button" name="{{hobby.hobby_id}}" class="btn like btn-sm btn-outline-secondary" value="HEART">
-                        <input type="hidden" name="{{hobby.user_id.user_id}}" id="user_like">
                       </div>
-                      {% for like in liked_count%}
-                        {%if hobby.hobby_id == like.hobby_id%}
-                          <small class="text-muted count-{{hobby.hobby_id}}">{{like.hobby_count}}</small>
+                      <input type="hidden" name="{{hobby.user_id.user_id}}" id="user_like">
+                      {% for like in likes%}
+                        {% if hobby.hobby_id == like.hobby_id.hobby_id%}
+                          <small class="text-muted count-{{hobby.hobby_id}}">{{like.like_user.all.count}}</small>
                         {% endif%}
                       {% endfor%}
                     </div>
@@ -58,13 +58,14 @@
         {% for hobby in hobbys %}
           {% if hobby.user_id.mbti_id.mbti_id == selected_mbti%}
             {% if hobby.user_id.user_id != 'admin'%}
+              <input type="hidden" name="{{hobby.hobby_id}}" id="like_rmd">
               <tr>
                 <th scope="row">{{hobby.user_id.name}}</th>
                 <td>{{hobby.title}}</td>
-                {% for like in liked_count%}
-                  {%if hobby.hobby_id == like.hobby_id%}
-                    <td class="rmd_count">{{like.hobby_count}}</td>
-                  {% endif%}
+                {% for like in likes%}
+                {% if hobby.hobby_id == like.hobby_id.hobby_id%}
+                <td class="rmd_count-{{hobby.hobby_id}}">{{like.like_user.all.count}}</td>
+                {%endif%}
                 {% endfor%}
               </tr>
             {%endif%}
@@ -130,7 +131,8 @@
         success:function(response){
           if(response.message){
             alert(response.message)
-            $('.rmd_count').html(response.like_count)
+            $('.rmd_count-'+response.target_id).html(response.like_count)
+            console.log(response.like_count)
           }
           else{
             $('#tbody').empty()
@@ -138,12 +140,14 @@
             $.each(response, function(idx, data){
               txt += "<tr><th scope = 'row'>"+data.user_name+"</th>"
               txt += "<td>"+data.title+"</td>"
-              txt += "<td>"+data.like_count+"</td>"
+              txt += "<td class=rmd_count-"+data.target_id+">"+data.like_count+"</td>"
               txt += "</tr>"
             })
             $('#tbody').append(txt)
-            console.log('NoNoNoNo')
           }
+        },
+        error:function(){
+          alert("결과값 오류")
         }
       });
     })

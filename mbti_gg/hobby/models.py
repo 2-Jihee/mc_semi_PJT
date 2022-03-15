@@ -20,7 +20,8 @@ class HobbyComment(models.Model):
 
 
 class HobbyLiked(models.Model):
-    class meta:
-        unique_together=(('hobby_id', 'user_id'),)
     hobby_id = models.ForeignKey(Hobby, on_delete=models.CASCADE, db_column='hobby_id')
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, db_column='user_id')
+    like_user = models.ManyToManyField(User, related_name='like_user', blank=True)
+
+    def total_like_user(self):
+        return self.like_user.count()
