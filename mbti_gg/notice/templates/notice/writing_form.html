@@ -2,6 +2,8 @@
 
 {% block content %}
 
+{% load static %}
+
 <html>
 <html lang="en">
 <head>
@@ -9,22 +11,35 @@
     <title>Title</title>
 </head>
 <body>
-    <form action="../notice_writing/" method="post">
-        {% csrf_token %}
-        <div>
-            <label>제목</label>
-            <input type="text" name="title" placeholder="제목을 입력하세요">
-        </div>
-        <div>
-            <label>작성자</label>
-            <input type="text" name="writer" placeholder="작성자를 입력하세요">
-        </div>
-        <div>
-            <label>내용</label>
-            <textarea name="content" placeholder="내용을 입력하세요"></textarea>
-        </div>
-        <button type="submit">submit</button>
-    </form>
+    <div class="container">
+        <form action="../notice_writing/" method="post">
+            {% csrf_token %}
+            <fieldset>
+                <div align="left">
+                    <h3>글쓰기</h3>
+                </div>
+                </p>
+                <div class="form-group">
+                  <label class="form-label mt-4">제목</label>
+                  <input type="text" class="form-control" name='title' id="title" placeholder="제목을 입력하세요">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label mt-4">작성자</label>
+                  <input type="text" class="form-control" name="writer" id="writer" placeholder="작성자를 입력하세요">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label mt-4">내용</label>
+                    <textarea class="form-control" name="content" placeholder="내용을 입력하세요" rows="3" style="height: 387px;"></textarea>
+                </div>
+                </p>
+                <div class="d-grid gap-2">
+                  <button  class="btn btn-lg btn-secondary" type="submit">작성</button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
 </body>
 </html>
 

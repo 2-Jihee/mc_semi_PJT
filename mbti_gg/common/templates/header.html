@@ -36,7 +36,7 @@
                         <a class="nav-link{% if nav_link_active == 'home' %} active{% endif %}" href="../home{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">Home{% if nav_link_active == 'home' %}<span class="visually-hidden">(current)</span>{% endif %}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link{% if nav_link_active == 'notice' %} active{% endif %}" href="../notice{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">공지사항{% if nav_link_active == 'mbti' %}<span class="visually-hidden">(current)</span>{% endif %}</a>
+                        <a class="nav-link{% if nav_link_active == 'notice' %} active{% endif %}" href="/notice{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">공지사항{% if nav_link_active == 'mbti' %}<span class="visually-hidden">(current)</span>{% endif %}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link{% if nav_link_active == 'mbti' %} active{% endif %}" href="../mbti{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">MBTI{% if nav_link_active == 'mbti' %}<span class="visually-hidden">(current)</span>{% endif %}</a>

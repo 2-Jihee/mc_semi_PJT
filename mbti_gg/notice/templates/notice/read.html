@@ -2,35 +2,45 @@
 
 {% block content %}
 
-<html>
+{% load static %}
+
+<html xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-    <div>
-        <input type="hidden" name="nno" id="nno" value="{{n_board.nno}}">
+    <div class="container">
+        <fieldset>
+            <div>
+                <input type="hidden" name="nno" id="nno" value="{{n_board.nno}}">
 
-        <label>제목</label>
-            <input type="text" name="title" id="title" value="{{n_board.title}}">
+                <label class="col-form-label mt-4">제목</label>
+                    <input type="text" class="form-control" name="title" id="title" value="{{n_board.title}}">
+            </div>
+            <div>
+                <label class="col-form-label mt-4">작성자</label>
+                    <input type="text" class="form-control" name="writer"id ='writer' value="{{n_board.writer}}" readonly >
+                    <!-- 일단 readonly 관리자의 수에 따라 작성자를 고정으로 할지 세션을 추가할지 생각해보기 -->
+            </div>
+            <div>
+                <label class="col-form-label mt-4">내용</label>
+                    <textarea class="form-control" name="content" id="content" rows="3" style="height: 387px;">
+                        {{n_board.content}}
+                    </textarea>
+            </div>
+            </p>
+            <div class="row" align="right">
+                <p class="bs-component">
+                    <button type="button" class="btn btn-secondary" id="del_btn">삭제</button>
+                    <button type="button" class="btn btn-secondary" id="mod_btn">수정</button>
+                    <button type="button" class="btn btn-secondary" id="lst_btn">목록</button>
+                </p>
+            </div>
     </div>
-    <div>
-        <label>작성자</label>
-            <input type="text" name="writer"id ='writer' value="{{n_board.writer}}" readonly >
+        </fieldset>
     </div>
-    <div>
-        <label>CONTENT</label>
-            <textarea name="content" id="content">
-                {{n_board.content}}
-            </textarea>
-    </div>
-    <div align="center">
-        <button type="button" id="del_btn">삭제</button>
-        <button type="button" id="mod_btn">수정</button>
-        <button type="button" id="lst_btn">목록</button>
-    </div>
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     $(document).ready(function() {
