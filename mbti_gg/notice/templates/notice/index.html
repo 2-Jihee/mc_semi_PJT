@@ -2,36 +2,49 @@
 
 {% block content %}
 
+{% load static %}
+
 <html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>MBTI.gg: {{title}}</title>
 </head>
 <body>
-    <div align="center">
-        <table>
-            <tr>
-                <td>NO</td>
-                <td>제목</td>
-                <td>작성자</td>
-                <td>작성일</td>
-                <td>조회</td>
-            </tr>
-            {% for i in n_boards %}
-            <tr>
-                <td>{{i.nno}}</td>
-                <td><a href="notice_read?nno={{i.nno}}">{{i.title}}</a></td>
-                <td>{{i.writer}}</td>
-                <td>{{i.regdate}}</td>
-                <td>{{i.viewcnt}}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-    <p/>
-    <div align="center">
-        <a href="writing_form">글쓰기</a>
+    <div class="container">
+        <div align=left">
+            <h3>공지사항</h3>
+        </div>
+        </p>
+        <div class="row">
+                <table class="table table-hover">
+                  <thead>
+                    <tr class="table-active">
+                        <th scope="col" class="text-center">NO</th>
+                        <th scope="col" class="text-center">제목</th>
+                        <th scope="col" class="text-center">작성자</th>
+                        <th scope="col" class="text-center">작성일</th>
+                        <th scope="col" class="text-center">조회</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for i in n_boards %}
+                    <tr>
+                        <th scope="row" class="text-center">{{forloop.revcounter}}</th>
+                        <td class="text-center"><a href="notice_read?nno={{i.nno}}">{{i.title}}</a></td>
+                        <td class="text-center">{{i.writer}}</td>
+                        <td class="text-center">{{i.regdate}}</td>
+                        <td class="text-center">{{i.viewcnt}}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+            </div>
+        <p/>
+        <div align="right">
+            <!-- 버튼 클릭시 링크로 이동 -->
+            <button class="btn btn-secondary" type="button" onclick="location.href='writing_form'">글쓰기</button>
+        </div>
     </div>
 </body>
 </html>
