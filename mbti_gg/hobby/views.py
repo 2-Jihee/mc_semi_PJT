@@ -5,10 +5,12 @@ from .models import *
 from mbti.models import *
 from user.models import *
 
+
+############ 모든 user는 추후 session이 들어오게되면 다 바꿀 예정
 # Create your views here.
 def index(request):
     print('>>> Hobby - Index')
-    if 'mbti' in request.GET:
+    try:
         selected_mbti = request.GET['mbti']
         hobbys = Hobby.objects.all()
         mbti_table = Mbti.objects.get(mbti_id=selected_mbti)
@@ -21,6 +23,7 @@ def index(request):
         #     print('≈,l)
         #     t = like.hobby_id
         #     print('⛔️ request check:',t)
+        cmts = HobbyComment.objects.all()
         user_mbti = request.session.get('user_mbti')
         user_name = request.session.get('user_name')
         context = {
@@ -32,10 +35,11 @@ def index(request):
             'user_mbti': user_mbti,
             'user_name': user_name,
             'likes' : likes,
+            'cmts' : cmts,
         }
 
         return render(request, 'hobby/index.html', context)
-    else:
+    except Exception:
         selected_mbti = ''
         context = {
             'selected_mbti': selected_mbti,
@@ -74,7 +78,7 @@ def rmd_submit(request):
         target_id = pk.hobby_id
         user = User.objects.get(name=user_name)
         uk = user.user_id
-        print('request check:', uk, user, target_id, pk, title)
+        print('⛔️ request check:', uk, user, target_id, pk, title)
         hobby_like = get_object_or_404(HobbyLiked, hobby_id=pk)
         if hobby_like.like_user.filter(user_id=uk).exists():
             print('⛔️ Does Exist title')
@@ -116,3 +120,29 @@ def rmd_submit(request):
         print(jsonAry)
         return JsonResponse(jsonAry, safe=False)
 # 다 구성 완료
+
+def create_cmt(request):
+    print('✅ GET User Comment Btn🚀')
+    cmt = request.POST.get('cmt',None)
+    label_name = request.POST.get('label_name', None)
+    user_object = User.objects.get(name=label_name)
+    user_id = user_object.user_id
+    #  user _ id 는 나중에 session이 나오면 바꿔질 예정
+    print('⛔️ request check:',cmt, user_id)
+    obj = HobbyComment.objects.create(
+        user_id = User.objects.get(user_id=user_id),
+        mbti_id = Mbti.objects.get(mbti_id=user_object.mbti_id.mbti_id),
+        comment = cmt
+    )
+    # print('⛔️ request check:',obj, obj.comment, obj.user_id, obj.mbti_id)
+    obj.save()
+    cmts = HobbyComment.objects.all()
+    jsonAry = []
+    for cmt in cmts:
+        jsonAry.append({
+            'name' : cmt.user_id.name,
+            'mbti' : cmt.mbti_id.mbti_id,
+            'cmt' : cmt.comment
+        })
+    print(jsonAry)
+    return JsonResponse(jsonAry, safe=False)

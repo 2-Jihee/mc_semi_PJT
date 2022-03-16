@@ -74,24 +74,39 @@
       </tbody>
     </table>
 <!--user_mbti 와 select_mbti 일치하는 조건문 입력 label에 유저의 이름 갖고오는걸로 변경해야 한다.-->
-    {% csrf_token%}
+<!--if user_mbti == selected_mbti 추후 session을 갖고오게 된다면 추후 반영할 예정-->
     <div class="mb-3">
       <label for="user_rmd" class="user_name form-label">PHS</label>
+<!--      이름은 user의 session을 갖고올 예정-->
       <input type="text" class="form-control" id="user_rmd">
     </div>
     <button type="submit" class="btn btn-primary like_submit">추천</button>
+<!-- endif-->
 
   </div>
   <div class="hobby_comment py-5 container" >
-  <form action="#" method="POST">
-    {% csrf_token%}
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Name / MBTI</th>
+          <td scope="col">Content</td>
+        </tr>
+      </thead>
+      <tbody id="cmt_body">
+      {% for cmt in cmts %}
+        <tr>
+          <th scope="row">{{cmt.user_id.name}} / {{cmt.mbti_id.mbti_id}}</th>
+          <td>{{cmt.comment}}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
     <div class="mb-3">
-      <label for="user_comment" class="form-label">{{user_name}}</label>
+      <label for="user_comment" class="name form-label">PHS</label>
+<!--       추후 이름을 session에서 갖고오는 걸 해야 한다.-->
       <input type="text" class="form-control" id="user_comment">
     </div>
-    <button type="submit" class="btn btn-primary">등록</button>
-
-  </form>
+    <button type="submit" class="btn cmt_btn btn-primary">등록</button>
   </div>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script type="text/javascript">
@@ -151,6 +166,34 @@
         }
       });
     })
+  </script>
+  <script type="text/javascript"> // cmt
+      $('.cmt_btn').click(function(){
+        window.alert('입력완료')
+        var cmt = $('#user_comment').val()
+        var id = $('#user_comment').attr("id")
+        var label_name = $("label[for='"+id+"']").text();
+        $.ajax({
+          url: './create_cmt/',
+          type: 'POST',
+          data: {
+            'csrfmiddlewaretoken' : '{{csrf_token}}',
+            'cmt' : cmt,
+            'label_name' : label_name
+          },
+          dataType: 'json',
+          success:function(response){
+            $('#cmt_body').empty()
+            var txt = ""
+            $.each(response, function(idx, data){
+              txt += "<tr><th scope = 'row'>"+data.name+" / "+data.mbti+"</th>"
+              txt += "<td>"+data.cmt+"</td>"
+              txt += "</tr>"
+            })
+            $('#cmt_body').append(txt)
+          }
+        })
+      })
   </script>
 </body>
 {% endblock %}
