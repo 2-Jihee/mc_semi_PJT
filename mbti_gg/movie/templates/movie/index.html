@@ -11,42 +11,40 @@
     </div>
   </section>
   <div class="album py-5">
-          <div class="container">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-              {% for movie in movies %}
-<!--                {% if movie.user_id.user_id == 'admin'%}-->
-<!--                  {% if movie.mbti_id == selected_mbti%}--> <!-- movie에 mbti_id 칼럼 추가 후 조건문인데 조회가 안됨-->
-                {% if movie.user_id.mbti_id.mbti_id == selected_mbti%}
-                  {% if movie.user_id.user_id == 'admin'%}
-                      <div class="col">
-                        <div class="card shadow-sm">
-                          <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false">
-                            <a href="{{movie.info}}">
-                              <image xlink:href="{{movie.photo}}" x="0"y="0" height="225" width="100%"/>
-                            </a>
-                          </svg>
-                          <div class="card-body">
-                            <p class="card-text">{{movie.title}}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                              <div class="btn-group">
-                                <input type="button" name="{{movie.movie_id}}" class="btn like btn-sm btn-outline-secondary" value="HEART">
-                                <input type="hidden" name="{{movie.user_id.user_id}}" id="user_like">
-                              </div>
-                              {% for like in liked_count%}
-                                {%if movie.movie_id == like.movie_id%}
-                                  <small class="text-muted count-{{movie.movie_id}}">{{like.movie_count}}</small>
-                                {% endif%}
-                              {% endfor%}
-                            </div>
-                          </div>
-                        </div>
+    <div class="container">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        {% for movie in movies %}
+          {% if movie.user_id.mbti_id.mbti_id == selected_mbti%}
+            {% if movie.user_id.user_id == 'admin'%}
+              <div class="col">
+                <div class="card shadow-sm">
+                  <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false">
+                    <a href="{{movie.info}}">
+                      <image xlink:href="{{movie.photo}}" x="0"y="0" height="225" width="100%"/>
+                    </a>
+                  </svg>
+                  <div class="card-body">
+                    <p class="card-text">{{movie.title}}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="btn-group">
+                        <input type="button" name="{{movie.movie_id}}" class="btn like btn-sm btn-outline-secondary" value="HEART">
                       </div>
-                    {% endif %}
-                  {% endif %}
-              {% endfor %}
-            </div>
-          </div>
-        </div>
+                      <input type="hidden" name="{{movie.user_id.user_id}}" id="user_like">
+                      {% for like in liked_count%}
+                        {%if movie.movie_id == like.movie_id%}
+                          <small class="text-muted count-{{movie.movie_id}}">{{like.movie_count}}</small>
+                        {% endif%}
+                      {% endfor%}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
   <div class="user_rmd py-5 container">
     <table class="table">
       <thead>
@@ -60,22 +58,21 @@
         {% for movie in movies %}
           {% if movie.user_id.mbti_id.mbti_id == selected_mbti%}
             {% if movie.user_id.user_id != 'admin'%}
-                  <tr>
-                    <th scope="row">{{movie.user_id.name}}</th>
-                    <td class="rmd_count">{{movie.title}}</td>
-                    {% for like in liked_count%}
-                      {%if movie.movie_id == like.movie_id%}
+              <tr>
+                <th scope="row">{{movie.user_id.name}}</th>
+                <td class="rmd_count">{{movie.title}}</td>
+                {% for like in liked_count%}
+                  {%if movie.movie_id == like.movie_id%}
                     <td>{{like.movie_count}}</td>
-                      {% endif%}
-                    {% endfor%}
-                  </tr>
+                  {% endif%}
+                {% endfor%}
+              </tr>
             {%endif%}
           {%endif%}
         {% endfor%}
       </tbody>
     </table>
   </div>
-
     <!-- {% if user_mbti == selected_mbti%} -->
     {{selected_mbti}}님 추천해주세요
       <div class="mb-3">
@@ -85,27 +82,25 @@
       <button type="submit" class="btn user_rmd btn-primary">추천</button>
     <!-- {%endif%} -->
   </div>
-
-    <div class="comment_list py-5 container">
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Content</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for cmt in cmts %}
-          <tr>
-            <th scope="row">{{cmt.user_id.name}}</th>
-            <td>{{cmt.comment}}</td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-    </div>
-
-    <div class="movie_comment py-5 container" -->
+  <div class="comment_list py-5 container">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Content</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for cmt in cmts %}
+        <tr>
+          <th scope="row">{{cmt.user_id.name}}</th>
+          <td>{{cmt.comment}}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="movie_comment py-5 container" -->
     <div class="user_comment mb-3">
       <label for="user_comment" class="form-label">{{user_name}}</label>
       <input type="text" class="form-control" id="user_comment">
@@ -139,7 +134,7 @@
       });
     })
   </script>
-  <script type="text/javascript">
+  <script type="text/javascript"> // 회원추천 좋아요
     $('.like_submit').click(function(){
       var title = $('#user_rmd').val()
       var id = $('#user_rmd').attr("id");
