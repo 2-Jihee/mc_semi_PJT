@@ -1,16 +1,209 @@
 {% include 'header.html' %}
 
 {% block content %}
-
-<html>
 <body>
-    <div class="container">
-        Movie - index</br>
-        Selected MBTI: {{selected_mbti}}
+  <section class="py-5 text-center container bg-light" id="mbti_info">
+    <div class="row py-lg-5">
+      <div class="col-lg-6 col-md-8 mx-auto">
+        <h1 class="fw-light" style="text-transform:uppercase">{{selected_mbti}}</h1>
+        <p class="lead text-muted">{{mbti_table.profile}}</p>
+      </div>
     </div>
-</body>
-</html>
+  </section>
+  <div class="album py-5">
+          <div class="container">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+              {% for movie in movies %}
+<!--                {% if movie.user_id.user_id == 'admin'%}-->
+<!--                  {% if movie.mbti_id == selected_mbti%}--> <!-- movie에 mbti_id 칼럼 추가 후 조건문인데 조회가 안됨-->
+                {% if movie.user_id.mbti_id.mbti_id == selected_mbti%}
+                  {% if movie.user_id.user_id == 'admin'%}
+                      <div class="col">
+                        <div class="card shadow-sm">
+                          <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false">
+                            <a href="{{movie.info}}">
+                              <image xlink:href="{{movie.photo}}" x="0"y="0" height="225" width="100%"/>
+                            </a>
+                          </svg>
+                          <div class="card-body">
+                            <p class="card-text">{{movie.title}}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div class="btn-group">
+                                <input type="button" name="{{movie.movie_id}}" class="btn like btn-sm btn-outline-secondary" value="HEART">
+                                <input type="hidden" name="{{movie.user_id.user_id}}" id="user_like">
+                              </div>
+                              {% for like in liked_count%}
+                                {%if movie.movie_id == like.movie_id%}
+                                  <small class="text-muted count-{{movie.movie_id}}">{{like.movie_count}}</small>
+                                {% endif%}
+                              {% endfor%}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+  <div class="user_rmd py-5 container">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Content</th>
+          <th scope="col">Heart</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for movie in movies %}
+          {% if movie.user_id.mbti_id.mbti_id == selected_mbti%}
+            {% if movie.user_id.user_id != 'admin'%}
+                  <tr>
+                    <th scope="row">{{movie.user_id.name}}</th>
+                    <td class="rmd_count">{{movie.title}}</td>
+                    {% for like in liked_count%}
+                      {%if movie.movie_id == like.movie_id%}
+                    <td>{{like.movie_count}}</td>
+                      {% endif%}
+                    {% endfor%}
+                  </tr>
+            {%endif%}
+          {%endif%}
+        {% endfor%}
+      </tbody>
+    </table>
+  </div>
 
+    <!-- {% if user_mbti == selected_mbti%} -->
+    {{selected_mbti}}님 추천해주세요
+      <div class="mb-3">
+        <label for="user_rmd" class="form-label">{{user_name}}</label>
+        <input type="text" class="form-control" id="user_rmd">
+      </div>
+      <button type="submit" class="btn user_rmd btn-primary">추천</button>
+    <!-- {%endif%} -->
+  </div>
+
+    <div class="comment_list py-5 container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Content</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for cmt in cmts %}
+          <tr>
+            <th scope="row">{{cmt.user_id.name}}</th>
+            <td>{{cmt.comment}}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="movie_comment py-5 container" -->
+    <div class="user_comment mb-3">
+      <label for="user_comment" class="form-label">{{user_name}}</label>
+      <input type="text" class="form-control" id="user_comment">
+    </div>
+<!--    <button type="submit" class="btn cmt btn-primary">등록</button>-->
+     <button onClick="cmt({{selected_mbti}})" type="submit" class="btn cmt btn-primary">등록</button>
+<!--      <button onClick="cmt()" type="submit" class="btn cmt btn-primary">등록</button>-->
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script type="text/javascript"> //좋아요
+    $('.like').click(function(){
+      var mk = $(this).attr("name")
+      var uk = $('#user_like').attr("name")
+      $.ajax({
+        url: './like_btn/',
+        type: 'POST',
+        data: {
+          'csrfmiddlewaretoken' : '{{csrf_token}}',
+          'mk' : mk,
+          'uk' : uk
+        },
+        dataType: 'json',
+        success:function(response){
+          alert(response.message)
+          $('.count-'+mk).html(response.like_count)
+        },
+        error: function(request, status, error){
+          alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+        }
+      });
+    })
+  </script>
+  <script type="text/javascript">
+    $('.like_submit').click(function(){
+      var title = $('#user_rmd').val()
+      var id = $('#user_rmd').attr("id");
+      var label_text = $("label[for='"+id+"']").text();
+      $.ajax({
+        url: './like_submit/',
+        type: 'POST',
+        data: {
+          'csrfmiddlewaretoken' : '{{csrf_token}}',
+          'title' : title,
+          'label_text' : label_text
+        },
+        dataType: 'json',
+        success:function(response){
+          if(response.message){
+            alert(response.message)
+            $('.rmd_count').html(response.like_count)
+          }
+          else{
+            $('#tbody').empty()
+            var txt = ""
+            $.each(response, function(idx, data){
+              txt += "<tr><th scope = 'row'>"+data.user_name+"</th>"
+              txt += "<td>"+data.title+"</td>"
+              txt += "<td>"+data.like_count+"</td>"
+              txt += "</tr>"
+            })
+            $('#tbody').append(txt)
+            console.log('NoNoNoNo')
+          }
+        }
+      });
+    })
+  </script>
+  <script type="text/javascript">
+      // $('.cmt').click(function(selected_mbti){ //댓글작성
+    function cmt(selected_mbti){
+    //   function cmt(){
+        var body = $('#user_comment').val();
+        var id = $('#user_comment').attr("id")
+        // var selected_mbti = $('#mbti_info').attr("selected_mbti")
+      // var selected_mbti = selected_mbti
+      $.ajax({
+        url: './create_cmt/',
+        type: 'POST',
+        data: {
+          'csrfmiddlewaretoken' : '{{csrf_token}}',
+          // 'selected_mbti' : '{{selected_mbti}}',
+          'selected_mbti' : selected_mbti, // 여기가 None으로 들어가서 오류 발생
+          'body':body
+        },
+        dataType: 'json',
+        success:function(response){ // ajax 통신 성공시
+          alert(response.message)
+          $("#comment_list").append("<p>"+response.body+"</p><hr>") // 로그인 세션 생기면 user name도 들어가야
+          $("#user_comment").val(' ')
+        },
+        error: function(request, status, error){
+          alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+        }
+      });
+    }
+  </script>
+</body>
 {% endblock %}
 
 {% include 'footer.html'%}
