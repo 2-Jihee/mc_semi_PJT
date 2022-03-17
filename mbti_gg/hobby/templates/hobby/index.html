@@ -29,7 +29,6 @@
                       <div class="btn-group">
                         <input type="button" name="{{hobby.hobby_id}}" class="btn like btn-sm btn-outline-secondary" value="HEART">
                       </div>
-                      <input type="hidden" name="{{hobby.user_id.user_id}}" id="user_like">
                       {% for like in likes%}
                         {% if hobby.hobby_id == like.hobby_id.hobby_id%}
                           <small class="text-muted count-{{hobby.hobby_id}}">{{like.like_user.all.count}}</small>
@@ -58,7 +57,6 @@
         {% for hobby in hobbys %}
           {% if hobby.user_id.mbti_id.mbti_id == selected_mbti%}
             {% if hobby.user_id.user_id != 'admin'%}
-              <input type="hidden" name="{{hobby.hobby_id}}" id="like_rmd">
               <tr>
                 <th scope="row">{{hobby.user_id.name}}</th>
                 <td>{{hobby.title}}</td>
@@ -76,8 +74,7 @@
 <!--user_mbti 와 select_mbti 일치하는 조건문 입력 label에 유저의 이름 갖고오는걸로 변경해야 한다.-->
 <!--if user_mbti == selected_mbti 추후 session을 갖고오게 된다면 추후 반영할 예정-->
     <div class="mb-3">
-      <label for="user_rmd" class="user_name form-label">PHS</label>
-<!--      이름은 user의 session을 갖고올 예정-->
+      <label for="user_rmd" class="user_name form-label">{{user_name}}</label>
       <input type="text" class="form-control" id="user_rmd">
     </div>
     <button type="submit" class="btn btn-primary like_submit">추천</button>
@@ -89,37 +86,42 @@
       <thead>
         <tr>
           <th scope="col">Name / MBTI</th>
-          <td scope="col">Content</td>
+          <th scope="col">Comment</th>
         </tr>
       </thead>
+      <input type="hidden" id="user_name" value="{{user_name}}"/>
       <tbody id="cmt_body">
       {% for cmt in cmts %}
         <tr>
           <th scope="row">{{cmt.user_id.name}} / {{cmt.mbti_id.mbti_id}}</th>
-          <td>{{cmt.comment}}</td>
+          <td class="cmt_text">{{cmt.comment}}</td>
+          {%if cmt.user_id.name == user_name%}
+          <td>
+          <input type="button"
+                   onclick="javascript:delBtn({{cmt.h_cno}})"
+                   name="{{cmt.h_cno}}" class="btn btn-sm btn-outline-secondary" style="font-size:10px; border:none; position:absolute" value="del">
+          </td>
+          {%endif%}
         </tr>
       {% endfor %}
       </tbody>
     </table>
     <div class="mb-3">
-      <label for="user_comment" class="name form-label">PHS</label>
-<!--       추후 이름을 session에서 갖고오는 걸 해야 한다.-->
+      <label for="user_comment" class="name form-label">{{user_name}}</label>
       <input type="text" class="form-control" id="user_comment">
     </div>
     <button type="submit" class="btn cmt_btn btn-primary">등록</button>
   </div>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script type="text/javascript">
+  <script type="text/javascript">  // 관리자 추천 게시물 좋아요
     $('.like').click(function(){
       var hk = $(this).attr("name")
-      var uk = $('#user_like').attr("name")
       $.ajax({
         url: './like_btn/',
         type: 'POST',
         data: {
           'csrfmiddlewaretoken' : '{{csrf_token}}',
-          'hk' : hk,
-          'uk' : uk
+          'hk' : hk
         },
         dataType: 'json',
         success:function(response){
@@ -129,18 +131,15 @@
       });
     })
   </script>
-  <script type="text/javascript">
+  <script type="text/javascript">  // 회원 추천 게시물 좋아요 및 게시물 입력
     $('.like_submit').click(function(){
-      var title = $('#user_rmd').val()
-      var id = $('#user_rmd').attr("id");
-      var label_text = $("label[for='"+id+"']").text();
+      var title = $('#user_rmd').val();
       $.ajax({
         url: './like_submit/',
         type: 'POST',
         data: {
           'csrfmiddlewaretoken' : '{{csrf_token}}',
-          'title' : title,
-          'label_text' : label_text
+          'title' : title
         },
         dataType: 'json',
         success:function(response){
@@ -171,15 +170,12 @@
       $('.cmt_btn').click(function(){
         window.alert('입력완료')
         var cmt = $('#user_comment').val()
-        var id = $('#user_comment').attr("id")
-        var label_name = $("label[for='"+id+"']").text();
         $.ajax({
           url: './create_cmt/',
           type: 'POST',
           data: {
             'csrfmiddlewaretoken' : '{{csrf_token}}',
-            'cmt' : cmt,
-            'label_name' : label_name
+            'cmt' : cmt
           },
           dataType: 'json',
           success:function(response){
@@ -187,13 +183,43 @@
             var txt = ""
             $.each(response, function(idx, data){
               txt += "<tr><th scope = 'row'>"+data.name+" / "+data.mbti+"</th>"
-              txt += "<td>"+data.cmt+"</td>"
+              txt += "<td class='cmt_text'>"+data.cmt+"</td>"
+              if($('#user_name').val() == data.name){
+                txt += "<td><input type='button' onclick='javascript:delBtn("+data.h_cno+")' name='"+data.h_cno+"' class='btn cmt_del btn-sm btn-outline-secondary' style='font-size:10px; border:none;position:absolute' value='del'></td>"
+              }
               txt += "</tr>"
             })
             $('#cmt_body').append(txt)
           }
         })
       })
+  </script>
+  <script type="text/javascript"> // cmt delete
+    function delBtn(h_cno) {
+      alert('del >>>>>>>>> '+h_cno)
+      $.ajax({
+        url : './cmt_del/',
+        type : 'POST',
+        data : {
+          'csrfmiddlewaretoken' : '{{csrf_token}}',
+          'h_cno' : h_cno
+        },
+        dataType : 'json',
+        success : function(response){
+          $('#cmt_body').empty()
+          var txt = ""
+          $.each(response, function(idx, data){
+            txt += "<tr><th scope = 'row'>"+data.name+" / "+data.mbti+"</th>"
+            txt += "<td class='cmt_text'>"+data.cmt+"</td>"
+            if($('#user_name').val() == data.name){
+              txt += "<td><input type='button' onclick='javascript:delBtn("+data.h_cno+")' name='"+data.h_cno+"' class='btn cmt_del btn-sm btn-outline-secondary' style='font-size:10px; border:none;position:absolute' value='del'></td>"
+            }
+            txt += "</tr>"
+          })
+          $('#cmt_body').append(txt)
+        }
+      })
+    }
   </script>
 </body>
 {% endblock %}

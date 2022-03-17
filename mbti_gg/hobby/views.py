@@ -28,13 +28,15 @@ def index(request):
     context['likes'] = HobbyLiked.objects.all()
     context['cmts'] = HobbyComment.objects.all()
 
+    print(context['user_name'])
     return render(request, 'hobby/index.html', context)
+
 
 def like(request):
     print('✅ GET Hobby Like Btn🚀')
     pk = request.POST.get('hk', None)
     ls = Hobby.objects.get(hobby_id=pk)
-    uk = request.POST.get('uk', None)
+    uk = request.session.get('user_id')
     hobby_like = get_object_or_404(HobbyLiked, hobby_id=ls)
 
     if hobby_like.like_user.filter(user_id=uk).exists():
@@ -48,24 +50,18 @@ def like(request):
         'message' : message
     }
     return JsonResponse(context)
-
-    # 개같이 성공했음...
     # 참조 : https://wayhome25.github.io/django/2017/06/25/django-ajax-like-button/
     # 참조 : https://jisun-rea.tistory.com/entry/Django-%EC%A2%8B%EC%95%84%EC%9A%94likes-%EA%B8%B0%EB%8A%A5-%EA%B5%AC%ED%98%84%ED%95%98%EA%B8%B0
 
 def rmd_submit(request):
     print('✅ GET User Recommend Hobby Btn🚀')
     title = request.POST['title']
-    user_name = request.POST.get('label_text',None)
+    uk = request.session.get('user_id')
     try:  # Hobby의 타이틀이 있다면 hobby_liked table에 좋아요를 생성
         pk = Hobby.objects.get(title=title)
-        target_id = pk.hobby_id
-        user = User.objects.get(name=user_name)
-        uk = user.user_id
-        print('⛔️ request check:', uk, user, target_id, pk, title)
         hobby_like = get_object_or_404(HobbyLiked, hobby_id=pk)
         if hobby_like.like_user.filter(user_id=uk).exists():
-            print('⛔️ Does Exist title')
+            print('⛔️ Exist title')
             hobby_like.like_user.remove(uk)
             message = '좋아요 취소'
         else:
@@ -74,22 +70,20 @@ def rmd_submit(request):
         context = {
             'like_count': hobby_like.total_like_user(),
             'message': message,
-            'target_id':target_id
+            'target_id':pk.hobby_id
         }
         return JsonResponse(context)
     except:  # hobby의 title이 일치하는게 없으면 hobby에 데이터를 추가!
         print('⛔️ DoesNotExist title')
-        user = User.objects.get(name=user_name)
-        uk = user.user_id
         new_data = Hobby.objects.create(
             title=title,
             user_id = User.objects.get(user_id = uk)
         )
-        new_data.save()
+        new_data.save()  # hobby table에 insert
         new_liked = HobbyLiked.objects.create(
             hobby_id=Hobby.objects.get(title=title)
         )
-        new_liked.save()
+        new_liked.save()  # Hobby liked table에 insert
         hobbys = Hobby.objects.all()
         jsonAry=[]
         for hobby in hobbys:
@@ -101,32 +95,41 @@ def rmd_submit(request):
                     'like_count': like.total_like_user(),
                     'target_id': hobby.hobby_id
                 })
-        print(jsonAry)
         return JsonResponse(jsonAry, safe=False)
-# 다 구성 완료
+
 
 def create_cmt(request):
     print('✅ GET User Comment Btn🚀')
     cmt = request.POST.get('cmt',None)
-    label_name = request.POST.get('label_name', None)
-    user_object = User.objects.get(name=label_name)
-    user_id = user_object.user_id
-    #  user _ id 는 나중에 session이 나오면 바꿔질 예정
-    print('⛔️ request check:',cmt, user_id)
     obj = HobbyComment.objects.create(
-        user_id = User.objects.get(user_id=user_id),
-        mbti_id = Mbti.objects.get(mbti_id=user_object.mbti_id.mbti_id),
+        user_id = User.objects.get(user_id=request.session.get('user_id')),
+        mbti_id = Mbti.objects.get(mbti_id=request.session.get('user_mbti')),
         comment = cmt
     )
-    # print('⛔️ request check:',obj, obj.comment, obj.user_id, obj.mbti_id)
     obj.save()
     cmts = HobbyComment.objects.all()
     jsonAry = []
     for cmt in cmts:
         jsonAry.append({
+            'h_cno' : cmt.h_cno,
             'name' : cmt.user_id.name,
             'mbti' : cmt.mbti_id.mbti_id,
             'cmt' : cmt.comment
+        })
+    return JsonResponse(jsonAry, safe=False)
+def cmt_del(request):
+    print('✅ GET User Comment delete Btn🚀')
+    h_cno = request.POST['h_cno']
+    print('⛔️ request check:',h_cno)
+    HobbyComment.objects.get(h_cno=h_cno).delete()
+    cmts = HobbyComment.objects.all()
+    jsonAry = []
+    for cmt in cmts:
+        jsonAry.append({
+            'h_cno' : cmt.h_cno,
+            'name' : cmt.user_id.name,
+            'mbti': cmt.mbti_id.mbti_id,
+            'cmt': cmt.comment
         })
     print(jsonAry)
     return JsonResponse(jsonAry, safe=False)
