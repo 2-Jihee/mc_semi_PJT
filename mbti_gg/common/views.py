@@ -13,7 +13,7 @@ def context_login(context, request):
             context['login_type'] = request.session['login_type']
             context['user_id'] = request.session['user_id']
             context['user_name'] = request.session['user_name']
-            context['user_mbti'] = request.session['user_mbti_id']
+            context['user_mbti'] = request.session['user_mbti']
 
     return
 
@@ -21,8 +21,8 @@ def context_login(context, request):
 def context_selected_mbti(context, request):
     if 'mbti' in request.GET:
         selected_mbti = request.GET['mbti']
-    elif 'user_mbti_id' in context:
-        selected_mbti = context['user_mbti_id']
+    elif 'user_mbti' in context:
+        selected_mbti = context['user_mbti']
     else:
         selected_mbti = ''
     context['selected_mbti'] = selected_mbti

@@ -34,7 +34,7 @@ def login_submit(request):
         request.session['login_type'] = 'login'
         request.session['user_id'] = login_user.user_id
         request.session['user_name'] = login_user.name
-        request.session['user_mbti_id'] = login_user.mbti_id.mbti_id
+        request.session['user_mbti'] = login_user.mbti_id.mbti_id
 
         return redirect('home_index')
 
