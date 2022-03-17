@@ -1,0 +1,30 @@
+{% include 'header.html' %}
+
+{% block content %}
+
+<html>
+<body>
+    <div class="container">
+        <h1 align="center">MBTI.gg 로그인</h1></p>
+        <div class="form-group">
+            <form action="./login/submit" method="post">
+                {% csrf_token %}
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="floatingInput" name="user_id">
+                    <label for="floatingInput">ID</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control" id="floatingPassword" name="pwd">
+                    <label for="floatingPassword">Password</label>
+                </div>
+                <button type="submit" class="btn btn-primary">로그인</button>
+                <button type="button" class="btn btn-primary" onclick="location.href='./signup'">회원가입</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+
+{% endblock %}
+
+{% include 'footer.html'%}

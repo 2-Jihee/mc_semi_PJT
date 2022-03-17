@@ -5,6 +5,7 @@ from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render, redirect,reverse, get_object_or_404
 from django.db.models import Count, F
+from user.views import context_login
 from .models import *
 from mbti.models import Mbti
 from user.models import User

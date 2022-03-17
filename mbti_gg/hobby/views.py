@@ -1,6 +1,7 @@
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.db.models import Count, F
+from user.views import context_login
 from .models import *
 from mbti.models import *
 from user.models import *
