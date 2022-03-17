@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from common.views import context_login, context_selected_mbti
 from user.models import User
 
 
@@ -89,13 +90,5 @@ def info(request):
     return render(request, 'user/info.html', context)
 
 
-def context_login(context, request):
-    if 'login_type' in request.session:
-        if request.session['login_type'] == 'login':
-            context['login_type'] = request.session['login_type']
-            context['user_id'] = request.session['user_id']
-            context['user_name'] = request.session['user_name']
-            context['user_mbti_id'] = request.session['user_mbti_id']
 
-    return
 

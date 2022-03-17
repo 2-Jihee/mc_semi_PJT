@@ -5,7 +5,7 @@ from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render, redirect,reverse, get_object_or_404
 from django.db.models import Count, F
-from user.views import context_login
+from common.views import context_login, context_selected_mbti
 from .models import *
 from mbti.models import Mbti
 from user.models import User
@@ -14,39 +14,25 @@ from user.models import User
 ################# 댓글 달기 및 조회, 추천 좋아요 기능(은 아마 html에서 ajax로)
 
 def index(request):
-    if 'mbti' in request.GET:
-        selected_mbti = request.GET['mbti']
-        mbti_table = Mbti.objects.get(mbti_id=selected_mbti) # .filter()은 쿼리셋으로, get은 객체로 받아옴
-        movies = Movie.objects.all() # 모든 영화 받아오기
-        cmts = MovieComment.objects.all() # 모든 댓글 받아오기
+    print('>>> Movie - Index')
 
-        # Class.objects.values('col_name').annotate(nickname=Count('col_name')) # 내림차순, 상위 10개
-        liked_count = MovieLiked.objects.values('movie_id').annotate(movie_count=Count('movie_id')).order_by('-movie_count')[:10]
+    # initialize the page
+    context = {
+        'title': 'Movie',
+        'nav_link_active': 'movie',
+    }
+    context_login(context, request)
+    context_selected_mbti(context, request)
 
-        # 세션 생기기 전까진 None
-        # user_id = request.session.get('user_id')
-        user_mbti = request.session.get('user_mbti')
-        user_name=request.session.get('user_name')
-        context = {
-            'title': 'Movie',
-            'nav_link_active': 'movie',
-            'selected_mbti': selected_mbti,
-            'movies' : movies,
-            'cmts' : cmts,
-            'mbti_table' : mbti_table,
-            # 'user_id' : user_id,
-            'user_mbti': user_mbti,
-            'user_name': user_name,
-            'liked_count' : liked_count,
-        }
-        return render(request, 'movie/index.html', context)
-
-    else:
-        selected_mbti = ''
-        context = {
-            'selected_mbti': selected_mbti,
-        }
+    if context['selected_mbti'] == '':
         return render(request, 'movie/select_mbti.html', context)
+
+    context['mbti_table'] = Mbti.objects.get(mbti_id=context['selected_mbti'])  # .filter()은 쿼리셋으로, get은 객체로 받아옴
+    context['movies'] = Movie.objects.all() # 모든 영화 받아오기
+    context['cmts'] = MovieComment.objects.all() # 모든 댓글 받아오기
+    context['liked_count'] = MovieLiked.objects.values('movie_id').annotate(movie_count=Count('movie_id')).order_by('-movie_count')[:10] # Class.objects.values('col_name').annotate(nickname=Count('col_name')) # 내림차순, 상위 10개
+
+    return render(request, 'movie/index.html', context)
 
 
 # @login_required(login_url="../login") # 로그인 하지 않은 사용자가 접근하면 로그인 화면으로 이동

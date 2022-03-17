@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from user.views import context_login
+from common.views import context_login, context_selected_mbti
 
 
 # Create your views here.

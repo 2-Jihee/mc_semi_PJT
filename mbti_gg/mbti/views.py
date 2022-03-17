@@ -1,23 +1,18 @@
 from django.shortcuts import render
-from user.views import context_login
+from common.views import context_login, context_selected_mbti
 
 
 # Create your views here.
 def index(request):
     print('>>> MBTI - Index')
 
-    if 'mbti' in request.GET:
-        selected_mbti = request.GET['mbti']
-    else:
-        selected_mbti = ''
-
+    # initialize the page
     context = {
         'title': 'MBTI',
         'nav_link_active': 'mbti',
-        'selected_mbti': selected_mbti,
     }
-
     context_login(context, request)
+    context_selected_mbti(context, request)
     
     return render(request, 'mbti/index.html', context)
 

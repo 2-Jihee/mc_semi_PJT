@@ -1,7 +1,7 @@
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.db.models import Count, F
-from user.views import context_login
+from common.views import context_login, context_selected_mbti
 from .models import *
 from mbti.models import *
 from user.models import *
@@ -11,41 +11,24 @@ from user.models import *
 # Create your views here.
 def index(request):
     print('>>> Hobby - Index')
-    try:
-        selected_mbti = request.GET['mbti']
-        hobbys = Hobby.objects.all()
-        mbti_table = Mbti.objects.get(mbti_id=selected_mbti)
-        likes = HobbyLiked.objects.all()
-        # 0을 구성했다.. 문제는... hobbyliked에 해당 hobby_ID가 심어져야지 확인이 가능하다..
-        # 그래서 다른 예시들 보면 hobby main table에 심어 놓는 이유가 이거 때문이다...
-        # 이렇게 모델과 뷰를 구성하게 되면 굳이 hobby_liked table이 필요한 이유가 있을 까??
-        # for like in likes:
-        #     l = like.like_user.all()
-        #     print('≈,l)
-        #     t = like.hobby_id
-        #     print('⛔️ request check:',t)
-        cmts = HobbyComment.objects.all()
-        user_mbti = request.session.get('user_mbti')
-        user_name = request.session.get('user_name')
-        context = {
-            'title': 'Hobby',
-            'nav_link_active': 'hobby',
-            'selected_mbti': selected_mbti,
-            'hobbys' : hobbys,
-            'mbti_table' : mbti_table,
-            'user_mbti': user_mbti,
-            'user_name': user_name,
-            'likes' : likes,
-            'cmts' : cmts,
-        }
 
-        return render(request, 'hobby/index.html', context)
-    except Exception:
-        selected_mbti = ''
-        context = {
-            'selected_mbti': selected_mbti,
-        }
+    # initialize the page
+    context = {
+        'title': 'Hobby',
+        'nav_link_active': 'hobby',
+    }
+    context_login(context, request)
+    context_selected_mbti(context, request)
+
+    if context['selected_mbti'] == '':
         return render(request, 'hobby/select_mbti.html', context)
+
+    context['mbti_table'] = Mbti.objects.get(mbti_id=context['selected_mbti'])
+    context['hobbys'] = Hobby.objects.all()
+    context['likes'] = HobbyLiked.objects.all()
+    context['cmts'] = HobbyComment.objects.all()
+
+    return render(request, 'hobby/index.html', context)
 
 def like(request):
     print('✅ GET Hobby Like Btn🚀')

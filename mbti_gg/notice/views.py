@@ -1,15 +1,23 @@
 from django.shortcuts   import render, redirect
-from user.views import context_login
+from common.views import context_login, context_selected_mbti
 from .models            import *
 
 # Create your views here.
 
 def index(request) :
-    n_boards = Notice.objects.all().order_by('-nno')
+    print('>>> Notice - Index')
+
+    # initialize the page
     context = {
-        'n_boards' : n_boards
+        'title': 'Notice',
+        'nav_link_active': 'notice',
     }
-    print(">>>>>>>>>> notice index")
+    context_login(context, request)
+    context_selected_mbti(context, request)
+
+    n_boards = Notice.objects.all().order_by('-nno')
+    context['n_boards'] = n_boards
+
     return render(request, 'notice/index.html', context)
 
 def writing_form(request) :
