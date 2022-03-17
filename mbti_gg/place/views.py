@@ -6,14 +6,12 @@ from common.views import context_login, context_selected_mbti
 def index(request):
     print('>>> Place - Index')
 
-    if 'mbti' in request.GET:
-        selected_mbti = request.GET['mbti']
-    else:
-        selected_mbti = ''
-
+    # initialize the page
     context = {
         'title': 'Place',
         'nav_link_active': 'place',
-        'selected_mbti': selected_mbti,
     }
+    context_login(context, request)
+    context_selected_mbti(context, request)
+
     return render(request, 'place/index.html', context)
