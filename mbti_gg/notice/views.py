@@ -1,8 +1,9 @@
 from django.shortcuts   import render, redirect
-from common.views import context_login, context_selected_mbti
+from common.views       import context_login, context_selected_mbti
 from .models            import *
 
 # Create your views here.
+
 
 def index(request) :
     print('>>> Notice - Index')
@@ -20,9 +21,28 @@ def index(request) :
 
     return render(request, 'notice/index.html', context)
 
+
 def writing_form(request) :
     print(">>>> writing_form")
-    return render(request, 'notice/writing_form.html')
+    context = {
+        'title': 'writing_form',
+        'nav_link_active': 'notice',
+    }
+    context_login(context, request)
+    context_selected_mbti(context, request)
+
+    # user_id가 admin이면 writing_form.html로 이동
+    if request.session['user_id'] == 'admin':
+        return render(request, 'notice/writing_form.html', context)
+    # user_id가 admin이 아니라면 notice/index.html로 이동
+    elif request.session['user_id'] != 'admin':
+        return redirect('notice_index')
+    # 비회원 처리 어떻게?
+    else:
+        return redirect('notice_index')
+
+    #return render(request, 'notice/writing_form.html', context)
+
 
 def writing(request) :
     print(">>>> notice writing")
@@ -36,10 +56,12 @@ def writing(request) :
 
     return redirect('notice_index')
 
+
 def read(request) :
     print('>>>> notice read')
     nno = request.GET['nno']
     print('debuge - ', nno)
+
     # select
     n_board = Notice.objects.get(nno=nno)
     # update - commit - save()
@@ -47,9 +69,12 @@ def read(request) :
     n_board.save()
 
     context = {
+        'title': 'read',
+        'nav_link_active': 'notice',
         'n_board' : n_board
     }
     return render(request, 'notice/read.html', context)
+
 
 def delete(request) :
     print('>>>>> notice delete')
@@ -60,6 +85,7 @@ def delete(request) :
     n_board.delete()
 
     return redirect('notice_index')
+
 
 def modify(request) :
     print('>>>>> notice modify')

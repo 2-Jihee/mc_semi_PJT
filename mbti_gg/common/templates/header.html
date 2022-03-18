@@ -39,10 +39,13 @@
                         <a class="nav-link{% if nav_link_active == 'notice' %} active{% endif %}" href="/notice{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">공지사항</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link{% if nav_link_active == 'check' %} active{% endif %}" href="../check{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">MBTI 검사</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link{% if nav_link_active == 'mbti' %} active{% endif %}" href="../mbti{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">MBTI</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link{% if nav_link_active == 'movie' %} active{% endif %}" href="../movie{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">영화·드라마</a>
+                        <a class="nav-link{% if nav_link_active == 'movie' %} active{% endif %}" href="../movie{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">영화</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link{% if nav_link_active == 'place' %} active{% endif %}" href="../place{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">여행지</a>
