@@ -26,21 +26,20 @@ def login_submit(request):
     user_id = request.POST['user_id']
     pwd = request.POST['pwd']
 
-    if User.objects.filter(user_id=user_id, pwd=pwd).exists():
-        login_user = User.objects.get(user_id=user_id, pwd=pwd)
-        print('>>> User - Login user_id:{}'.format(user_id))
-
-        # create login session
-        request.session['login_type'] = 'login'
-        request.session['user_id'] = login_user.user_id
-        request.session['user_name'] = login_user.name
-        request.session['user_mbti'] = login_user.mbti_id.mbti_id
-
-        return redirect('home_index')
-
-    else:
+    if User.objects.filter(user_id=user_id, pwd=pwd).exists() is False:
         # incorrect id & password
         return redirect('user_login')
+
+    login_user = User.objects.get(user_id=user_id, pwd=pwd)
+    print('>>> User - Login user_id:{}'.format(user_id))
+
+    # create login session
+    request.session['login_type'] = 'login'
+    request.session['user_id'] = login_user.user_id
+    request.session['user_name'] = login_user.name
+    request.session['user_mbti'] = login_user.mbti_id.mbti_id
+
+    return redirect('home_index')
 
 
 def logout(request):
@@ -49,7 +48,7 @@ def logout(request):
     request.session['login_type'] = 'logout'
     request.session.pop('user_id', None)
     request.session.pop('user_name', None)
-    request.session.pop('user_mbti_id', None)
+    request.session.pop('user_mbti', None)
 
     return redirect('home_index')
 
@@ -65,7 +64,7 @@ def signup(request):
     # initialize the page
     context = {
         'title': 'Sign Up',
-        'nav_link_active': 'user',
+        'nav_link_active': 'signup',
     }
 
     return render(request, 'user/signup.html', context)

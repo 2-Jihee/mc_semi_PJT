@@ -33,29 +33,29 @@
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link{% if nav_link_active == 'home' %} active{% endif %}" href="../home{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">Home</a>
+                        <a class="nav-link{% if nav_link_active == 'home' %} active{% endif %}" href="../home/{% if selected_mbti != '' %}?mbti={{selected_mbti}}{% endif %}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link{% if nav_link_active == 'notice' %} active{% endif %}" href="/notice{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">공지사항</a>
+                        <a class="nav-link{% if nav_link_active == 'notice' %} active{% endif %}" href="/notice/{% if selected_mbti != '' %}?mbti={{selected_mbti}}{% endif %}">공지사항</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link{% if nav_link_active == 'check' %} active{% endif %}" href="../check{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">MBTI 검사</a>
+                        <a class="nav-link{% if nav_link_active == 'check' %} active{% endif %}" href="../check/{% if selected_mbti != '' %}?mbti={{selected_mbti}}{% endif %}">MBTI 검사</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link{% if nav_link_active == 'mbti' %} active{% endif %}" href="../mbti{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">MBTI</a>
+                        <a class="nav-link{% if nav_link_active == 'mbti' %} active{% endif %}" href="../mbti/{% if selected_mbti != '' %}?mbti={{selected_mbti}}{% endif %}">MBTI</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link{% if nav_link_active == 'movie' %} active{% endif %}" href="../movie{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">영화</a>
+                        <a class="nav-link{% if nav_link_active == 'movie' %} active{% endif %}" href="../movie/{% if selected_mbti != '' %}?mbti={{selected_mbti}}{% endif %}">영화</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link{% if nav_link_active == 'place' %} active{% endif %}" href="../place{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">여행지</a>
+                        <a class="nav-link{% if nav_link_active == 'place' %} active{% endif %}" href="../place/{% if selected_mbti != '' %}?mbti={{selected_mbti}}{% endif %}">여행지</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link{% if nav_link_active == 'hobby' %} active{% endif %}" href="../hobby{% if selected_mbti != '' %}/?mbti={{selected_mbti}}{% endif %}">취미</a>
+                        <a class="nav-link{% if nav_link_active == 'hobby' %} active{% endif %}" href="../hobby/{% if selected_mbti != '' %}?mbti={{selected_mbti}}{% endif %}">취미</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-md-auto">
-                    {% if login_type == 'login' and nav_link_active != 'user' %}
+                    {% if login_type == 'login' and nav_link_active != 'user' and nav_link_active != 'signup' %}
                     <li class="nav-item">
                         <a class="nav-link">{{user_name}}님의 MBTI는 {{user_mbti}}입니다.</a>
                     </li>
@@ -90,16 +90,19 @@
                         </div>
                     </li>
                     {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link{% if nav_link_active == 'user' %}  active{% endif %}" href="../user/{% if login_type == 'login' %}info{% else %}login{% endif %}">{% if login_type == 'login' %}회원정보{% else %}로그인{% endif %}</a>
-                    </li>
                     {% if login_type == 'login' %}
+                    <li class="nav-item">
+                        <a class="nav-link{% if nav_link_active == 'user' %}  active{% endif %}" href="../user/info">회원정보</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../user/logout">로그아웃</a>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="../user/signup">회원가입</a>
+                        <a class="nav-link{% if nav_link_active == 'user' %}  active{% endif %}" href="../user/login">로그인</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if nav_link_active == 'signup' %}  active{% endif %}" href="../user/signup">회원가입</a>
                     </li>
                     {% endif %}
                 </ul>
