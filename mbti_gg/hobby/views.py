@@ -101,35 +101,41 @@ def rmd_submit(request):
 def create_cmt(request):
     print('✅ GET User Comment Btn🚀')
     cmt = request.POST.get('cmt',None)
+    s_mbti = request.POST.get('s_mbti',None)
     obj = HobbyComment.objects.create(
         user_id = User.objects.get(user_id=request.session.get('user_id')),
-        mbti_id = Mbti.objects.get(mbti_id=request.session.get('user_mbti')),
+        mbti_id = Mbti.objects.get(mbti_id=s_mbti),
         comment = cmt
     )
     obj.save()
+    print(obj)
     cmts = HobbyComment.objects.all()
     jsonAry = []
     for cmt in cmts:
-        jsonAry.append({
-            'h_cno' : cmt.h_cno,
-            'name' : cmt.user_id.name,
-            'mbti' : cmt.mbti_id.mbti_id,
-            'cmt' : cmt.comment
-        })
+        if cmt.mbti_id.mbti_id == s_mbti:
+            jsonAry.append({
+                'h_cno' : cmt.h_cno,
+                'name' : cmt.user_id.name,
+                'mbti' : cmt.user_id.mbti_id.mbti_id,
+                'cmt' : cmt.comment
+            })
     return JsonResponse(jsonAry, safe=False)
+
+
 def cmt_del(request):
     print('✅ GET User Comment delete Btn🚀')
     h_cno = request.POST['h_cno']
-    print('⛔️ request check:',h_cno)
+    s_mbti = request.POST.get('s_mbti',None)
     HobbyComment.objects.get(h_cno=h_cno).delete()
     cmts = HobbyComment.objects.all()
     jsonAry = []
     for cmt in cmts:
-        jsonAry.append({
-            'h_cno' : cmt.h_cno,
-            'name' : cmt.user_id.name,
-            'mbti': cmt.mbti_id.mbti_id,
-            'cmt': cmt.comment
-        })
+        if cmt.mbti_id.mbti_id == s_mbti:
+            jsonAry.append({
+                'h_cno' : cmt.h_cno,
+                'name' : cmt.user_id.name,
+                'mbti': cmt.user_id.mbti_id.mbti_id,
+                'cmt': cmt.comment
+            })
     print(jsonAry)
     return JsonResponse(jsonAry, safe=False)
