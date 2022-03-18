@@ -2,7 +2,7 @@
 
 {% block content %}
 <body>
-  <section class="py-5 text-center container bg-light" id="mbti_info">
+  <section class="py-5 text-center container bg-light">
     <div class="row py-lg-5">
       <div class="col-lg-6 col-md-8 mx-auto">
         <h1 class="fw-light" style="text-transform:uppercase">{{selected_mbti}}</h1>
@@ -14,7 +14,7 @@
     <div class="container">
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
         {% for movie in movies %}
-          {% if movie.user_id.mbti_id.mbti_id == selected_mbti%}
+          {% if movie.mbti_id.mbti_id == selected_mbti%}
             {% if movie.user_id.user_id == 'admin'%}
               <div class="col">
                 <div class="card shadow-sm">
@@ -29,10 +29,10 @@
                       <div class="btn-group">
                         <input type="button" name="{{movie.movie_id}}" class="btn like btn-sm btn-outline-secondary" value="HEART">
                       </div>
-                      <input type="hidden" name="{{movie.user_id.user_id}}" id="user_like">
-                      {% for like in liked_count%}
-                        {%if movie.movie_id == like.movie_id%}
-                          <small class="text-muted count-{{movie.movie_id}}">{{like.movie_count}}</small>
+<!--                      <input type="hidden" name="{{movie.user_id.user_id}}" id="user_like">-->
+                      {% for like in likes%}
+                        {%if movie.movie_id == like.movie_id.movie_id%}
+                          <small class="text-muted count-{{movie.movie_id}}">{{like.m_like_user.all.count}}</small>
                         {% endif%}
                       {% endfor%}
                     </div>
@@ -54,16 +54,17 @@
           <th scope="col">Heart</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="tbody">
         {% for movie in movies %}
-          {% if movie.user_id.mbti_id.mbti_id == selected_mbti%}
+          {% if movie.mbti_id.mbti_id == selected_mbti%} <!-- 여기 movie.user_id.mbti_id.mbti_id에서 수정함-->
             {% if movie.user_id.user_id != 'admin'%}
+<!--              <input type="hidden" name="{{movie.movie_id}}" id="like_rmd">-->
               <tr>
                 <th scope="row">{{movie.user_id.name}}</th>
-                <td class="rmd_count">{{movie.title}}</td>
-                {% for like in liked_count%}
-                  {%if movie.movie_id == like.movie_id%}
-                    <td>{{like.movie_count}}</td>
+                <td>{{movie.title}}</td>
+                {% for like in likes%}
+                  {%if movie.movie_id == like.movie_id.movie_id%}
+                    <td class="rmd_count-{{movie.movie_id}}">{{like.m_like_user.all.count}}</td>
                   {% endif%}
                 {% endfor%}
               </tr>
@@ -72,86 +73,84 @@
         {% endfor%}
       </tbody>
     </table>
+
+    {% if user_mbti == selected_mbti%}
+    <div class="mb-3">
+      <label for="user_rmd" class="user_name form-label">{{user_name}}</label>
+      <input type="text" class="form-control" id="user_rmd">
+    </div>
+    <button type="submit" class="btn btn-primary like_submit">추천</button>
+    {% endif %}
+
   </div>
-    <!-- {% if user_mbti == selected_mbti%} -->
-    {{selected_mbti}}님 추천해주세요
-      <div class="mb-3">
-        <label for="user_rmd" class="form-label">{{user_name}}</label>
-        <input type="text" class="form-control" id="user_rmd">
-      </div>
-      <button type="submit" class="btn user_rmd btn-primary">추천</button>
-    <!-- {%endif%} -->
-  </div>
-  <div class="comment_list py-5 container">
+
+  <div class="movie_comment py-5 container">
     <table class="table">
       <thead>
         <tr>
-          <th scope="col">Name</th>
+          <th scope="col">Name / MBTI</th>
           <th scope="col">Content</th>
         </tr>
       </thead>
-      <tbody>
+            <input type="hidden" id="user_name" value="{{user_name}}"/>
+      <tbody id="cmt_body">
       {% for cmt in cmts %}
         <tr>
-          <th scope="row">{{cmt.user_id.name}}</th>
-          <td>{{cmt.comment}}</td>
+          <th scope="row">{{cmt.user_id.name}} / {{cmt.user_id.mbti_id.mbti_id}}</th> <!-- 댓글 작성한 회원의 mbti를 출력하도록 수정됨 -->
+          <td class="comment_text">{{cmt.comment}}</td>
+          {%if cmt.user_id.name == user_name%}
+          <td>
+          <input type="button"
+                   onclick="javascript:delBtn({{cmt.m_cno}})"
+                   name="{{cmt.m_cno}}" class="btn btn-sm btn-outline-secondary" style="font-size:10px; border:none; position:absolute" value="del">
+          </td>
+          {%endif%}
         </tr>
       {% endfor %}
       </tbody>
     </table>
-  </div>
-  <div class="movie_comment py-5 container" -->
-    <div class="user_comment mb-3">
-      <label for="user_comment" class="form-label">{{user_name}}</label>
+    <div class="mb-3">
+      <label for="user_comment" class="name form-label">{{user_name}}</label>
       <input type="text" class="form-control" id="user_comment">
     </div>
-<!--    <button type="submit" class="btn cmt btn-primary">등록</button>-->
-     <button onClick="cmt({{selected_mbti}})" type="submit" class="btn cmt btn-primary">등록</button>
-<!--      <button onClick="cmt()" type="submit" class="btn cmt btn-primary">등록</button>-->
+    <button type="submit" class="btn cmt_btn btn-primary">등록</button>
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script type="text/javascript"> //좋아요
+  <script type="text/javascript"> //관리자 게시물 좋아요
     $('.like').click(function(){
-      var mk = $(this).attr("name")
-      var uk = $('#user_like').attr("name")
+      var mk = $(this).attr("name") //click한 요소의 attribute 중 name 값을 가져온다. movie_id.user_id.user_id
       $.ajax({
         url: './like_btn/',
         type: 'POST',
         data: {
           'csrfmiddlewaretoken' : '{{csrf_token}}',
           'mk' : mk,
-          'uk' : uk
         },
         dataType: 'json',
         success:function(response){
           alert(response.message)
           $('.count-'+mk).html(response.like_count)
-        },
-        error: function(request, status, error){
-          alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
         }
       });
     })
   </script>
-  <script type="text/javascript"> // 회원추천 좋아요
+  <script type="text/javascript">
     $('.like_submit').click(function(){
       var title = $('#user_rmd').val()
-      var id = $('#user_rmd').attr("id");
-      var label_text = $("label[for='"+id+"']").text();
       $.ajax({
         url: './like_submit/',
         type: 'POST',
         data: {
           'csrfmiddlewaretoken' : '{{csrf_token}}',
           'title' : title,
-          'label_text' : label_text
         },
         dataType: 'json',
         success:function(response){
           if(response.message){
             alert(response.message)
-            $('.rmd_count').html(response.like_count)
+            $('.rmd_count-'+response.target_id).html(response.like_count)
+            console.log(response.like_count)
           }
           else{
             $('#tbody').empty()
@@ -159,43 +158,85 @@
             $.each(response, function(idx, data){
               txt += "<tr><th scope = 'row'>"+data.user_name+"</th>"
               txt += "<td>"+data.title+"</td>"
-              txt += "<td>"+data.like_count+"</td>"
+              txt += "<td class=rmd_count-"+data.target_id+">"+data.like_count+"</td>"
               txt += "</tr>"
             })
             $('#tbody').append(txt)
-            console.log('NoNoNoNo')
           }
+        },
+        error:function(){
+          alert("결과값 오류")
         }
       });
     })
   </script>
-  <script type="text/javascript">
-      // $('.cmt').click(function(selected_mbti){ //댓글작성
-    function cmt(selected_mbti){
-    //   function cmt(){
-        var body = $('#user_comment').val();
-        var id = $('#user_comment').attr("id")
-        // var selected_mbti = $('#mbti_info').attr("selected_mbti")
-      // var selected_mbti = selected_mbti
+  <script type="text/javascript"> // cmt
+  $('.cmt_btn').click(function(){
+    window.alert('입력완료')
+    const URLSearch = new URLSearchParams(location.search);
+    function searchParam(key) {
+      return new URLSearchParams(location.search).get(key);
+    };
+    var selected_mbti = searchParam('mbti') // query string으로 해당 페이지가 어느 mbti인지 알기 위해서
+    selected_mbti.slice(1,4) // mbti_id 앞뒤의 ' 제거
+    var cmt = $('#user_comment').val()
+    $.ajax({
+      url: './create_cmt/',
+      type: 'POST',
+      data: {
+        'csrfmiddlewaretoken' : '{{csrf_token}}',
+        'cmt' : cmt,
+        'selected_mbti' : selected_mbti
+      },
+      dataType: 'json',
+      success:function(response){
+        $('#cmt_body').empty()
+        var txt = ""
+        $.each(response, function(idx, data){
+          txt += "<tr><th scope = 'row'>"+data.name+" / "+data.mbti+"</th>"
+          txt += "<td class='cmt_text'>"+data.cmt+"</td>"
+          if($('#user_name').val() == data.name){
+            txt += "<td><input type='button' onclick='javascript:delBtn("+data.m_cno+")' name='"+data.m_cno+"' class='btn cmt_del btn-sm btn-outline-secondary' style='font-size:10px; border:none;position:absolute' value='del'></td>"
+          }
+          txt += "</tr>"
+        })
+        $('#cmt_body').append(txt)
+      }
+    })
+  })
+  </script>
+  <script type="text/javascript"> // cmt delete
+    function delBtn(m_cno) {
+          const URLSearch = new URLSearchParams(location.search);
+    function searchParam(key) {
+      return new URLSearchParams(location.search).get(key);
+    };
+    var selected_mbti = searchParam('mbti') // query string으로 해당 페이지가 어느 mbti인지 알기 위해서
+    selected_mbti.slice(1,4) // mbti_id 앞뒤의 ' 제거
+      alert('del >>>>>>>>> '+m_cno)
       $.ajax({
-        url: './create_cmt/',
-        type: 'POST',
-        data: {
+        url : './cmt_del/',
+        type : 'POST',
+        data : {
           'csrfmiddlewaretoken' : '{{csrf_token}}',
-          // 'selected_mbti' : '{{selected_mbti}}',
-          'selected_mbti' : selected_mbti, // 여기가 None으로 들어가서 오류 발생
-          'body':body
+          'm_cno' : m_cno,
+          'selected_mbti' : selected_mbti
         },
-        dataType: 'json',
-        success:function(response){ // ajax 통신 성공시
-          alert(response.message)
-          $("#comment_list").append("<p>"+response.body+"</p><hr>") // 로그인 세션 생기면 user name도 들어가야
-          $("#user_comment").val(' ')
-        },
-        error: function(request, status, error){
-          alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+        dataType : 'json',
+        success : function(response){
+          $('#cmt_body').empty()
+          var txt = ""
+          $.each(response, function(idx, data){
+            txt += "<tr><th scope = 'row'>"+data.name+" / "+data.mbti+"</th>"
+            txt += "<td class='cmt_text'>"+data.cmt+"</td>"
+            if($('#user_name').val() == data.name){
+              txt += "<td><input type='button' onclick='javascript:delBtn("+data.m_cno+")' name='"+data.m_cno+"' class='btn cmt_del btn-sm btn-outline-secondary' style='font-size:10px; border:none;position:absolute' value='del'></td>"
+            }
+            txt += "</tr>"
+          })
+          $('#cmt_body').append(txt)
         }
-      });
+      })
     }
   </script>
 </body>
