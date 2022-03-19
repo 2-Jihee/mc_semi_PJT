@@ -1,13 +1,14 @@
-from django.http import JsonResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect, reverse, get_object_or_404
-from django.db.models import Count, F
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404
+from django.db.models import Count
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 from common.views import context_login, context_selected_mbti
 from .models import *
 from mbti.models import *
 from user.models import *
 
 
-############ 모든 user는 추후 session이 들어오게되면 다 바꿀 예정
 # Create your views here.
 def index(request):
     print('>>> Hobby - Index')
@@ -56,9 +57,11 @@ def like(request):
 def rmd_submit(request):
     print('✅ GET User Recommend Hobby Btn🚀')
     title = request.POST['title']
+    print('⛔️request check : ',title)
     uk = request.session.get('user_id')
     try:  # Hobby의 타이틀이 있다면 hobby_liked table에 좋아요를 생성
         pk = Hobby.objects.get(title=title)
+        print('⛔️request check : ',pk)
         hobby_like = get_object_or_404(HobbyLiked, hobby_id=pk)
         if hobby_like.like_user.filter(user_id=uk).exists():
             print('⛔️ Exist title')
@@ -77,7 +80,8 @@ def rmd_submit(request):
         print('⛔️ DoesNotExist title')
         new_data = Hobby.objects.create(
             title=title,
-            user_id = User.objects.get(user_id = uk)
+            user_id = User.objects.get(user_id = uk),
+            mbti_id = Mbti.objects.get(mbti_id = request.session.get('user_mbti'))
         )
         new_data.save()  # hobby table에 insert
         new_liked = HobbyLiked.objects.create(
@@ -109,16 +113,15 @@ def create_cmt(request):
     )
     obj.save()
     print(obj)
-    cmts = HobbyComment.objects.all()
+    cmts = HobbyComment.objects.filter(mbti_id=s_mbti)
     jsonAry = []
     for cmt in cmts:
-        if cmt.mbti_id.mbti_id == s_mbti:
-            jsonAry.append({
-                'h_cno' : cmt.h_cno,
-                'name' : cmt.user_id.name,
-                'mbti' : cmt.user_id.mbti_id.mbti_id,
-                'cmt' : cmt.comment
-            })
+        jsonAry.append({
+            'h_cno' : cmt.h_cno,
+            'name' : cmt.user_id.name,
+            'mbti' : cmt.user_id.mbti_id.mbti_id,
+            'cmt' : cmt.comment
+        })
     return JsonResponse(jsonAry, safe=False)
 
 
@@ -127,15 +130,14 @@ def cmt_del(request):
     h_cno = request.POST['h_cno']
     s_mbti = request.POST.get('s_mbti',None)
     HobbyComment.objects.get(h_cno=h_cno).delete()
-    cmts = HobbyComment.objects.all()
+    cmts = HobbyComment.objects.filter(mbti_id=s_mbti)
     jsonAry = []
     for cmt in cmts:
-        if cmt.mbti_id.mbti_id == s_mbti:
-            jsonAry.append({
-                'h_cno' : cmt.h_cno,
-                'name' : cmt.user_id.name,
-                'mbti': cmt.user_id.mbti_id.mbti_id,
-                'cmt': cmt.comment
-            })
+        jsonAry.append({
+            'h_cno' : cmt.h_cno,
+            'name' : cmt.user_id.name,
+            'mbti': cmt.user_id.mbti_id.mbti_id,
+            'cmt': cmt.comment
+        })
     print(jsonAry)
     return JsonResponse(jsonAry, safe=False)

@@ -12,9 +12,12 @@
   </section>
   <div class="album py-5">
     <div class="container">
+      <div align=left">
+            <h3>홈페이지 추천</h3>
+      </div>
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
         {% for hobby in hobbys %}
-          {% if hobby.user_id.mbti_id.mbti_id == selected_mbti%}
+          {% if hobby.mbti_id.mbti_id == selected_mbti%}
             {% if hobby.user_id.user_id == 'admin'%}
               <div class="col">
                 <div class="card shadow-sm">
@@ -45,6 +48,9 @@
     </div>
   </div>
   <div class="user_rmd py-5 container">
+    <div align=left">
+      <h3>회원 추천</h3>
+    </div>
     <table class="table">
       <thead>
         <tr>
@@ -55,7 +61,7 @@
       </thead>
       <tbody id="tbody">
         {% for hobby in hobbys %}
-          {% if hobby.user_id.mbti_id.mbti_id == selected_mbti%}
+          {% if hobby.mbti_id.mbti_id == selected_mbti%}
             {% if hobby.user_id.user_id != 'admin'%}
               <tr>
                 <th scope="row">{{hobby.user_id.name}}</th>
@@ -81,6 +87,9 @@
 
   </div>
   <div class="hobby_comment py-5 container" >
+    <div align=left">
+      <h3>댓글창</h3>
+    </div>
     <table class="table">
       <thead>
         <tr>
