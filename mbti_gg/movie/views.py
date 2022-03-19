@@ -30,7 +30,7 @@ def index(request):
 
 
 # @login_required(login_url="../login") # 로그인 하지 않은 사용자가 접근하면 로그인 화면으로 이동
-def like(request): ################################ 수정필요
+def like(request):  
     print('✅ GET Hobby Like Btn🚀')
     pk = request.POST.get('mk', None)
     ls = Movie.objects.get(movie_id=pk)
@@ -50,13 +50,13 @@ def like(request): ################################ 수정필요
     return JsonResponse(context)
 
 
-def rmd_submit(request): ################################ 수정필요
+def rmd_submit(request):
     print('✅ GET User Recommend Movie Btn🚀')
     # print(request.session['user_id'])
-    title = request.POST.get('title')
+    title = request.POST.get('title', None)
     uk = request.session.get('user_id')
-    try:  # Movie의 타이틀이 있다면 movie_liked table에 좋아요를 생성
-        pk = Movie.objects.get(title=title)
+    try :  # Movie의 타이틀이 있다면 movie_liked table에 좋아요를 생성
+        pk = Movie.objects.get(title=title) ######## 여기서 오류 발생. query not matching
         movie_like = get_object_or_404(MovieLiked, movie_id=pk)
         if movie_like.m_like_user.fliter(user_id=uk).exists():
             print('⛔️ Exist title')
@@ -74,7 +74,7 @@ def rmd_submit(request): ################################ 수정필요
     except:  # movie의 title이 일치하는게 없으면 movie에 데이터를 추가!
         print('⛔️ DoesNotExist title')
         user = User.objects.get(user_id = uk)
-        print(user.mbti_id.mbti_id)
+        # print(user.mbti_id.mbti_id)
         new_data = Movie.objects.create(
             title=title,
             user_id = User.objects.get(user_id = uk),
@@ -88,7 +88,7 @@ def rmd_submit(request): ################################ 수정필요
         movies = Movie.objects.all()
         jsonAry=[]
         for movie in movies:
-            if movie.user_id.user_id != 'admin':
+            if movie.user_id.user_id != 'admin': # 유저가 등록한 추천 영화면
                 like = get_object_or_404(MovieLiked, movie_id=movie.movie_id)
                 jsonAry.append({
                     'title': movie.title,
@@ -116,7 +116,7 @@ def create_cmt(request):
         jsonAry.append({
             'm_cno': cmt.m_cno,
             'name' : cmt.user_id.name,
-            'mbti' : cmt.mbti_id.mbti_id,
+            'mbti' : cmt.user_id.mbti_id.mbti_id,
             'cmt' : cmt.comment
         })
     return JsonResponse(jsonAry, safe=False)
@@ -134,7 +134,7 @@ def cmt_del(request):
         jsonAry.append({
             'm_cno' : cmt.m_cno,
             'name' : cmt.user_id.name,
-            'mbti': cmt.mbti_id.mbti_id,
+            'mbti' : cmt.user_id.mbti_id.mbti_id,
             'cmt': cmt.comment
         })
     return JsonResponse(jsonAry, safe=False)
