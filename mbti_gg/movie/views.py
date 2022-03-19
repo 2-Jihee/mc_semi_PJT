@@ -52,13 +52,13 @@ def like(request):
 
 def rmd_submit(request):
     print('✅ GET User Recommend Movie Btn🚀')
-    # print(request.session['user_id'])
-    title = request.POST.get('title', None)
+    title = request.POST.get('title',None)
     uk = request.session.get('user_id')
     try :  # Movie의 타이틀이 있다면 movie_liked table에 좋아요를 생성
-        pk = Movie.objects.get(title=title) ######## 여기서 오류 발생. query not matching
-        movie_like = get_object_or_404(MovieLiked, movie_id=pk)
-        if movie_like.m_like_user.fliter(user_id=uk).exists():
+        mk = Movie.objects.get(title=title)
+        print('⛔️request check : ',mk)
+        movie_like = get_object_or_404(MovieLiked, movie_id=mk)
+        if movie_like.m_like_user.filter(user_id=uk).exists():  # fliter -> filter 오타
             print('⛔️ Exist title')
             movie_like.m_like_user.remove(uk)
             message = '좋아요 취소'
@@ -68,17 +68,16 @@ def rmd_submit(request):
         context = {
             'like_count': movie_like.total_like_user(),
             'message': message,
-            'target_id': pk.movie_id
+            'target_id': mk.movie_id
         }
         return JsonResponse(context)
     except:  # movie의 title이 일치하는게 없으면 movie에 데이터를 추가!
         print('⛔️ DoesNotExist title')
-        user = User.objects.get(user_id = uk)
         # print(user.mbti_id.mbti_id)
         new_data = Movie.objects.create(
             title=title,
             user_id = User.objects.get(user_id = uk),
-            mbti_id = Mbti.objects.get(mbti_id = user.mbti_id.mbti_id)
+            mbti_id = Mbti.objects.get(mbti_id = request.session.get('user_mbti'))
         )
         new_data.save()
         new_liked = MovieLiked.objects.create(
