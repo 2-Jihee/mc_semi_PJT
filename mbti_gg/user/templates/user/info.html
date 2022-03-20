@@ -4,72 +4,107 @@
 
 <html>
 <body>
+  <script>
+    function check_pwd(){
+
+      var pwd = document.getElementById('pwd').value;
+      var pwd2 = document.getElementById('pwd2').value;
+
+      if(pwd !='' && pwd2 =='' && (pwd.length < 6 || pwd.length > 16)){
+        window.alert('비밀번호는 6글자 이상, 16글자 이하만 이용 가능합니다.');
+        document.getElementById('pwd').value='';
+      }
+      if(pwd =='' && pwd2 !='' && (pwd2.length < 6 || pwd2.length > 16)){
+        window.alert('비밀번호는 6글자 이상, 16글자 이하만 이용 가능합니다.');
+        document.getElementById('pwd2').value='';
+      }
+      if(pwd !='' && pwd2 !=''){
+        if(document.getElementById('pwd').value==document.getElementById('pwd2').value){
+            document.getElementById('check').innerHTML='비밀번호가 일치합니다.'
+            document.getElementById('check').style.color='blue';
+        }
+        else{
+            document.getElementById('check').innerHTML='비밀번호가 일치하지 않습니다.';
+            document.getElementById('check').style.color='red';
+        }
+      }
+    }
+  </script>
+  {% if messages %}
+  <script>
+    {% for msg in messages %}
+    alert('{{ msg }}');
+    {% endfor %}
+  </script>
+  {% endif %}
   <div class="container">
-    <h1 align="center">MBTI.gg 회원정보</h1></p>
-    <form action="./info/submit" method="post">
+    <h1 align="center">MBTI.gg 회원정보</h1>
+    <form action="./info" method="post">
       {% csrf_token %}
       <fieldset>
-        <legend class="mt-4">기본 정보</legend>
+        <legend class="mt-5">기본 정보</legend>
         <div class="form-group">
-          <label class="form-label mt-4">ID</label>
-          <input type="text" readonly="" class="form-control" value="{{user_id}}" name="user_id">
+          <label class="form-label mt-1">ID</label>
+          <input type="text" class="form-control" placeholder="ID 입력" value="{{user_id}}">
         </div>
         <div class="form-group">
-          <label class="form-label mt-4">별명</label>
-          <input type="text" class="form-control" value="{{user_name}}" name="name">
+          <label class="form-label mt-3">이름(별명)</label>
+          <input type="text" class="form-control" placeholder="이름(별명) 입력" value="{{name}}" name="name">
+          <small class="form-text text-muted">댓글 작성 및 추천시, 타 회원에게 보여지는 이름(별명) 입니다.</small>
         </div>
         <div class="form-group">
-          <label class="form-label mt-4">비밀번호</label>
-          <input type="password" class="form-control" placeholder="Type New Password" name="pwd">
+          <label class="form-label mt-3">비밀번호</label>
+          <input type="password" class="form-control" placeholder="비밀번호 입력" name="curr_pwd">
+          <small class="form-text text-muted">회원정보를 변경하시려면  비밀번호를 입력해 주세요.</small>
         </div>
-        <br>
-        <br>
+        <div class="form-group">
+          <label class="form-label mt-3">비밀번호 변경</label>
+          <input type="password" class="form-control" placeholder="신규 비밀번호 입력" id="pwd" name="pwd" onchange="check_pwd()">
+          <input type="password" class="form-control mt-2" placeholder="신규 비밀번호 확인" id="pwd2" name="pwd2" onchange="check_pwd()">
+          <small class="form-text text-muted"><span id="check"></span></small>
+        </div>
       </fieldset>
       <fieldset>
-        <legend class="mt-4">필수 정보</legend>
+        <legend class="mt-5">필수 정보</legend>
         <div class="form-group">
-          <label class="form-label mt-4">MBTI</label>
+          <label class="form-label mt-1">MBTI</label>
           <select class="form-select" name="mbti_id">
-            <option value>------------</option>
-            <option value="INTJ"{% if user_mbti == "INTJ" %} selected{% endif %}>INTJ: 용의주도한 전략가</option>
-            <option value="INTP"{% if user_mbti == "INTP" %} selected{% endif %}>INTP: 논리적인 사색가</option>
-            <option value="ENTJ"{% if user_mbti == "ENTJ" %} selected{% endif %}>ENTJ: 대담한 통솔자</option>
-            <option value="ENTP"{% if user_mbti == "ENTP" %} selected{% endif %}>ENTP: 뜨거운 논쟁을 즐기는 변론가</option>
-            <option value="INFJ"{% if user_mbti == "INFJ" %} selected{% endif %}>INFJ: 선의의 옹호자</option>
-            <option value="INFP"{% if user_mbti == "INFP" %} selected{% endif %}>INFP: 열정적인 중재자</option>
-            <option value="ENFJ"{% if user_mbti == "ENFJ" %} selected{% endif %}>ENFJ: 정의로운 사회운동가</option>
-            <option value="ENFP"{% if user_mbti == "ENFP" %} selected{% endif %}>ENFP: 재기발랄한 활동가</option>
-            <option value="ISTJ"{% if user_mbti == "ISTJ" %} selected{% endif %}>ISTJ: 청렴결백한 논리주의자</option>
-            <option value="ISFJ"{% if user_mbti == "ISFJ" %} selected{% endif %}>ISFJ: 용감한 수호자</option>
-            <option value="ESTJ"{% if user_mbti == "ESTJ" %} selected{% endif %}>ESTJ: 엄격한 관리자</option>
-            <option value="ESFJ"{% if user_mbti == "ESFJ" %} selected{% endif %}>ESFJ: 사교적인 외교관</option>
-            <option value="ISTP"{% if user_mbti == "ISTP" %} selected{% endif %}>ISTP: 만능 재주꾼</option>
-            <option value="ISFP"{% if user_mbti == "ISFP" %} selected{% endif %}>ISFP: 호기심 많은 예술가</option>
-            <option value="ESTP"{% if user_mbti == "ESTP" %} selected{% endif %}>ESTP: 모험을 즐기는 사업가</option>
-            <option value="ESFP"{% if user_mbti == "ESFP" %} selected{% endif %}>ESFP: 자유로운 영혼의 연예인</option>
+            <option value{% if mbti_id == "" %} selected{% endif %}>------------</option>
+            <option value="INTJ"{% if mbti_id == "INTJ" %} selected{% endif %}>INTJ: 용의주도한 전략가</option>
+            <option value="INTP"{% if mbti_id == "INTP" %} selected{% endif %}>INTP: 논리적인 사색가</option>
+            <option value="ENTJ"{% if mbti_id == "ENTJ" %} selected{% endif %}>ENTJ: 대담한 통솔자</option>
+            <option value="ENTP"{% if mbti_id == "ENTP" %} selected{% endif %}>ENTP: 뜨거운 논쟁을 즐기는 변론가</option>
+            <option value="INFJ"{% if mbti_id == "INFJ" %} selected{% endif %}>INFJ: 선의의 옹호자</option>
+            <option value="INFP"{% if mbti_id == "INFP" %} selected{% endif %}>INFP: 열정적인 중재자</option>
+            <option value="ENFJ"{% if mbti_id == "ENFJ" %} selected{% endif %}>ENFJ: 정의로운 사회운동가</option>
+            <option value="ENFP"{% if mbti_id == "ENFP" %} selected{% endif %}>ENFP: 재기발랄한 활동가</option>
+            <option value="ISTJ"{% if mbti_id == "ISTJ" %} selected{% endif %}>ISTJ: 청렴결백한 논리주의자</option>
+            <option value="ISFJ"{% if mbti_id == "ISFJ" %} selected{% endif %}>ISFJ: 용감한 수호자</option>
+            <option value="ESTJ"{% if mbti_id == "ESTJ" %} selected{% endif %}>ESTJ: 엄격한 관리자</option>
+            <option value="ESFJ"{% if mbti_id == "ESFJ" %} selected{% endif %}>ESFJ: 사교적인 외교관</option>
+            <option value="ISTP"{% if mbti_id == "ISTP" %} selected{% endif %}>ISTP: 만능 재주꾼</option>
+            <option value="ISFP"{% if mbti_id == "ISFP" %} selected{% endif %}>ISFP: 호기심 많은 예술가</option>
+            <option value="ESTP"{% if mbti_id == "ESTP" %} selected{% endif %}>ESTP: 모험을 즐기는 사업가</option>
+            <option value="ESFP"{% if mbti_id == "ESFP" %} selected{% endif %}>ESFP: 자유로운 영혼의 연예인</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label mt-4">성별</label>
+          <label class="form-label mt-3">성별</label>
           <select class="form-select" name="gender">
-            <option value selected>----</option>
-            <option value="M"{% if user_gender == "M" %} selected{% endif %}>남성</option>
-            <option value="F"{% if user_gender == "F" %} selected{% endif %}>여성</option>
+            <option value{% if gender == "" %} selected{% endif %}>----</option>
+            <option value="M"{% if gender == "M" %} selected{% endif %}>남성</option>
+            <option value="F"{% if gender == "F" %} selected{% endif %}>여성</option>
           </select>
         </div>
-        <br>
-        <br>
       </fieldset>
       <fieldset>
-        <legend class="mt-4">선택 정보</legend>
+        <legend class="mt-5">선택 정보</legend>
         <div class="form-group">
-          <label class="form-label mt-4">생년월일</label>
-          <input type="text" class="form-control" {% if user_birth_dt == "" %}placeholder="YYYY-MM-DD"{% else %}value="{{user_birth_dt}}"{% endif %} name="birth_dt">
+          <label class="form-label mt-1">생년월일</label>
+          <input type="text" class="form-control" placeholder="YYYY-MM-DD" value="{{birth_dt_str}}" name="birth_dt_str">
         </div>
-        <br>
-        <br>
       </fieldset>
-      <label class="form-label mt-4">
+      <label class="form-label mt-5">
         <button type="submit" class="btn btn-primary">회원정보 수정</button>
       </label>
     </form>
