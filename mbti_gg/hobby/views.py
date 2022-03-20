@@ -29,7 +29,6 @@ def index(request):
     context['likes'] = HobbyLiked.objects.all()
     context['cmts'] = HobbyComment.objects.all()
 
-    print(context['user_name'])
     return render(request, 'hobby/index.html', context)
 
 
