@@ -5,46 +5,185 @@
 {% load static %}
 
 <html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>MBTI.gg: {{title}}</title>
-</head>
+    <style>
+        /* 스크롤바는 없애고 스크롤 기능은 살리는 효과 */
+        body {
+            -ms-overflow-style: none;     /* IE, Edge */
+        }
+        ::-webkit-scrollbar {
+            display: none;                /* Chrome, Safari, Opera */
+        }
+
+        .mbti_box {
+            display               : grid;
+            grid-template-rows    : repeat(4, 1fr);
+            grid-template-columns : repeat(8, 1fr);
+            row-gap               : 10px;
+            column-gap            : 0px;
+        }
+        img {
+            height  : 180px;
+            width   : 180px;
+        }
+        h3 {
+            height  : 180px;
+            width   : 180px;
+        }
+    </style>
+
 <body>
-    <div class="container">
-        <div align=left">
-            <h3>공지사항</h3>
+
+    <h1 align="center">CLICK ON YOUR MBTI</h1>
+    <p style="margin:0px 0px 50px 0px"></p>
+
+    <div class="mbti_box" align="center">
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item">
+            <a href="./?mbti=INTJ"> <!--링크 일단 비워놓기 -->
+                <h3>
+                    <img src="{% static 'assets/images/mbti_characters/1_INTJ.jpg' %}" alt="INTJ" title="INTJ" />
+                </h3>
+            </a>
+            <span class="badge bg-secondary">INTJ</span>
         </div>
-        </p>
-        <div class="row">
-                <table class="table table-hover">
-                  <thead>
-                    <tr class="table-active">
-                        <th scope="col" class="text-center">NO</th>
-                        <th scope="col" class="text-center">제목</th>
-                        <th scope="col" class="text-center">작성자</th>
-                        <th scope="col" class="text-center">작성일</th>
-                        <th scope="col" class="text-center">조회</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for i in n_boards %}
-                    <tr>
-                        <th scope="row" class="text-center">{{forloop.revcounter}}</th>
-                        <td class="text-center"><a href="notice_read?nno={{i.nno}}">{{i.title}}</a></td>
-                        <td class="text-center">{{i.writer}}</td>
-                        <td class="text-center">{{i.regdate}}</td>
-                        <td class="text-center">{{i.viewcnt}}</td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-            </div>
-        <p/>
-            <div align="right">
-                <!-- 버튼 클릭시 링크로 이동 -->
-                <button class="btn btn-secondary" type="button" onclick="location.href='writing_form'">글쓰기</button>
-            </div>
+        <div class="item">
+            <a href="./?mbti=INTP">
+                <h3>
+                    <img src="{% static 'assets/images/mbti_characters/2_INTP.jpg' %}" alt="INTP" title="INTP" />
+                </h3>
+            </a>
+            <span class="badge bg-secondary">INTP</span>
+        </div>
+        <div class="item">
+            <a href="./?mbti=ENTJ">
+                <h3>
+                    <img src="{% static 'assets/images/mbti_characters/3_ENTJ.jpg' %}" alt="ENTJ" title="ENTJ" />
+                </h3>
+            </a>
+            <span class="badge bg-secondary">ENTJ</span>
+        </div>
+        <div class="item">
+            <a href="./?mbti=ENTP">
+                <h3>
+                    <img src="{% static 'assets/images/mbti_characters/4_ENTP.jpg' %}" alt="ENTP" title="ENTP" />
+                </h3>
+            </a>
+            <span class="badge bg-secondary">ENTP</span>
+        </div>
+        <div class="item"></div>
+        <div class="item"></div>
+
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item">
+            <a href="./?mbti=INFJ">
+                <h3>
+                    <img src="{% static 'assets/images/mbti_characters/5_INFJ.jpg' %}" alt="INFJ" title="INFJ" />
+                </h3>
+            </a>
+            <span class="badge bg-success">INFJ</span>
+        </div>
+        <div class="item">
+            <a href="./?mbti=INFP">
+                <h3>
+                    <img src="{% static 'assets/images/mbti_characters/6_INFP.jpg' %}" alt="INFP" title="INFP" />
+                </h3>
+            </a>
+            <span class="badge bg-success">INFP</span>
+        </div>
+        <div class="item">
+            <a href="./?mbti=ENFJ">
+                <h3>
+                    <img src="{% static 'assets/images/mbti_characters/7_ENFJ.jpg' %}" alt="ENFJ" title="ENFJ" />
+                </h3>
+            </a>
+            <span class="badge bg-success">ENFJ</span>
+        </div>
+        <div class="item">
+            <a href="./?mbti=ENFP">
+                <h3>
+                    <img src="{% static 'assets/images/mbti_characters/8_ENFP.jpg' %}" alt="ENFP" title="ENFP" />
+                </h3>
+            </a>
+            <span class="badge bg-success">ENFP</span>
+        </div>
+        <div class="item"></div>
+        <div class="item"></div>
+
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item">
+            <a href="./?mbti=ISTJ">
+                <h3>
+                    <img src="{% static 'assets/images/mbti_characters/9_ISTJ.jpg' %}" alt="ISTJ" title="ISTJ" />
+                </h3>
+            </a>
+            <span class="badge bg-info">ISTJ</span>
+        </div>
+        <div class="item">
+            <a href="./?mbti=ISFJ">
+                <h3>
+                    <img src="{% static 'assets/images/mbti_characters/10_ISFJ.jpg' %}" alt="ISFJ" title="ISFJ" />
+                </h3>
+            </a>
+            <span class="badge bg-info">ISFJ</span>
+        </div>
+        <div class="item">
+            <a href="./?mbti=ESTJ">
+                <h3>
+                    <img src="{% static 'assets/images/mbti_characters/11_ESTJ.jpg' %}" alt="ESTJ" title="ESTJ" />
+                </h3>
+            </a>
+            <span class="badge bg-info">ESTJ</span>
+        </div>
+        <div class="item">
+            <a href="./?mbti=ESFJ">
+                <h3>
+                    <img src="{% static 'assets/images/mbti_characters/12_ESFJ.jpg' %}" alt="ESFJ" title="ESFJ" />
+                </h3>
+            </a>
+            <span class="badge bg-info">ESFJ</span>
+        </div>
+        <div class="item"></div>
+        <div class="item"></div>
+
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item">
+            <a href="./?mbti=ISTP">
+                <h3>
+                    <img src="{% static 'assets/images/mbti_characters/13_ISTP.jpg' %}" alt="ISTP" title="ISTP" />
+                </h3>
+            </a>
+            <span class="badge bg-warning">ISTP</span>
+        </div>
+        <div class="item">
+            <a href="./?mbti=ISFP">
+                <h3>
+                    <img src="{% static 'assets/images/mbti_characters/14_ISFP.jpg' %}" alt="ISFP" title="ISFP" />
+                </h3>
+            </a>
+            <span class="badge bg-warning">ISFP</span>
+        </div>
+        <div class="item">
+            <a href="./?mbti=ESTP">
+                <h3>
+                    <img src="{% static 'assets/images/mbti_characters/15_ESTP.jpg' %}" alt="ESTP" title="ESTP" />
+                </h3>
+            </a>
+            <span class="badge bg-warning">ESTP</span>
+        </div>
+        <div class="item">
+            <a href="./?mbti=ESFP">
+                <h3>
+                    <img src="{% static 'assets/images/mbti_characters/16_ESFP.jpg' %}" alt="ESFP" title="ESFP" />
+                </h3>
+            </a>
+            <span class="badge bg-warning">ESFP</span>
+        </div>
+        <div class="item"></div>
+        <div class="item"></div>
     </div>
 </body>
 </html>

@@ -33,7 +33,7 @@
                         <th scope="row" class="text-center">{{forloop.revcounter}}</th>
                         <td class="text-center"><a href="notice_read?nno={{i.nno}}">{{i.title}}</a></td>
                         <td class="text-center">{{i.writer}}</td>
-                        <td class="text-center">{{i.regdate}}</td>
+                        <td class="text-center">{{i.regdate | date:"Y-m-d h:i" }}</td>
                         <td class="text-center">{{i.viewcnt}}</td>
                     </tr>
                     {% endfor %}
