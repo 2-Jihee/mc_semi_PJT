@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'hobby',
     'notice',
     'check',
+    'tour',
 ]
 
 MIDDLEWARE = [
