@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from common.views import context_login, context_selected_mbti
 from user.models import User
+from mbti.models import Mbti
 from datetime import datetime
 
 
@@ -80,46 +81,48 @@ def signup_submit(request):
     mbti_id = request.POST['mbti_id']
     gender = request.POST['gender']
     birth_dt = request.POST['birth_dt']
-
-    print('>>> User - Signup try user_id:{}'.format(user_id))
-
-    if User.objects.filter(user_id=user_id).exists():
-        print('>>> User - Signup submit error: user_id exists')
-        return redirect('user_login')
-
-    if User.objects.filter(name=name).exists():
-        print('>>> User - Signup submit error: name exists')
-        return redirect('user_login')
-
+    
     if user_id == '':
         print('>>> User - Signup submit error: user_id is Empty')
-        return redirect('user_login')
+        return redirect('user_signup')
+    elif User.objects.filter(user_id=user_id).exists():
+        print('>>> User - Signup submit error: user_id exists')
+        return redirect('user_signup')
 
     if name == '':
         print('>>> User - Signup submit error: name is Empty')
-        return redirect('user_login')
+        return redirect('user_signup')
+    elif User.objects.filter(name=name).exists():
+        print('>>> User - Signup submit error: name exists')
+        return redirect('user_signup')
 
     if pwd == '':
         print('>>> User - Signup submit error: pwd is Empty')
-        return redirect('user_login')
+        return redirect('user_signup')
 
     if mbti_id == '':
         print('>>> User - Signup submit error: mbti_id is Empty')
-        return redirect('user_login')
+        return redirect('user_signup')
+    else:
+        mbti_id = Mbti.objects.get(mbti_id=mbti_id)
 
     if gender == '':
         print('>>> User - Signup submit error: gender is Empty')
-        return redirect('user_login')
+        return redirect('user_signup')
 
+    User(user_id=user_id, name=name, pwd=pwd, mbti_id=mbti_id, gender=gender, birth_dt=None).save()
+    print('>>> User - Created user_id:{}'.format(user_id))
+
+    new_user = User.objects.get(user_id=user_id)
     if birth_dt != '':
         try:
-            datetime.strptime(birth_dt, '%Y-%m-%d')
+            birth_date = datetime.strptime(birth_dt, '%Y-%m-%d')
+            new_user = User.objects.get(user_id=user_id)
+            new_user.birth_dt = birth_date
+            new_user.save()
         except:
             print('>>> User - Signup submit error: birth_dt format is incorrect')
-            return redirect('user_login')
-
-    User(user_id=user_id, name=name, pwd=pwd, mbti_id=mbti_id, gender=gender, birth_dt=birth_dt).save()
-    print('>>> User - Signup successful user_id:{}'.format(user_id))
+            return redirect('user_signup')
 
     return redirect('user_login')
 
