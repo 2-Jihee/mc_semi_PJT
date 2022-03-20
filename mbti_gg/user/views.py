@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from common.views import context_login, context_selected_mbti
 from user.models import User
 from mbti.models import Mbti
-from datetime import datetime
+import datetime
 
 
 # Create your views here.
@@ -116,7 +116,7 @@ def signup_submit(request):
     new_user = User.objects.get(user_id=user_id)
     if birth_dt != '':
         try:
-            birth_date = datetime.strptime(birth_dt, '%Y-%m-%d')
+            birth_date = datetime.datetime.strptime(birth_dt, '%Y-%m-%d')
             new_user = User.objects.get(user_id=user_id)
             new_user.birth_dt = birth_date
             new_user.save()
@@ -137,8 +137,20 @@ def info(request):
     }
     context_login(context, request)
 
+    curr_user = User.objects.get(user_id=context['user_id'])
+    context['user_name'] = curr_user.name
+    context['user_mbti'] = curr_user.mbti_id.mbti_id
+    context['user_gender'] = curr_user.gender
+    if isinstance(curr_user.birth_dt, datetime.date):
+        context['user_birth_dt'] = curr_user.birth_dt.strftime('%Y-%m-%d')
+    else:
+        context['user_birth_dt'] = ''
+
     return render(request, 'user/info.html', context)
 
 
+def info_submit(request):
+    print('>>> User - Info submit')
 
+    return
 
