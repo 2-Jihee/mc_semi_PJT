@@ -88,9 +88,10 @@ def rmd_submit(request):
         )
         new_liked.save()  # Hobby liked table에 insert
         hobbys = Hobby.objects.all()
+        s_mbti = request.POST.get('s_mbti', None)
         jsonAry=[]
         for hobby in hobbys:
-            if hobby.user_id.user_id != 'admin':
+            if hobby.user_id.user_id != 'admin' and hobby.mbti_id.mbti_id == s_mbti:
                 like = get_object_or_404(HobbyLiked, hobby_id=hobby.hobby_id)
                 jsonAry.append({
                     'title':hobby.title,

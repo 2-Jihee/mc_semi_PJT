@@ -144,12 +144,14 @@
   <script type="text/javascript">  // 회원 추천 게시물 좋아요 및 게시물 입력
     $('.like_submit').click(function(){
       var title = $('#user_rmd').val();
+      var s_mbti= $('.fw-light').text()
       $.ajax({
         url: './like_submit/',
         type: 'POST',
         data: {
           'csrfmiddlewaretoken' : '{{csrf_token}}',
-          'title' : title
+          'title' : title,
+          's_mbti':s_mbti
         },
         dataType: 'json',
         success:function(response){
