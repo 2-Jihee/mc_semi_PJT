@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from common.views import context_login, context_selected_mbti
 from user.models import User
+from datetime import datetime
 
 
 # Create your views here.
@@ -73,7 +74,54 @@ def signup(request):
 def signup_submit(request):
     print('>>> User - Signup submit')
 
-    return
+    user_id = request.POST['user_id']
+    name = request.POST['name']
+    pwd = request.POST['pwd']
+    mbti_id = request.POST['mbti_id']
+    gender = request.POST['gender']
+    birth_dt = request.POST['birth_dt']
+
+    print('>>> User - Signup try user_id:{}'.format(user_id))
+
+    if User.objects.filter(user_id=user_id).exists():
+        print('>>> User - Signup submit error: user_id exists')
+        return redirect('user_login')
+
+    if User.objects.filter(name=name).exists():
+        print('>>> User - Signup submit error: name exists')
+        return redirect('user_login')
+
+    if user_id == '':
+        print('>>> User - Signup submit error: user_id is Empty')
+        return redirect('user_login')
+
+    if name == '':
+        print('>>> User - Signup submit error: name is Empty')
+        return redirect('user_login')
+
+    if pwd == '':
+        print('>>> User - Signup submit error: pwd is Empty')
+        return redirect('user_login')
+
+    if mbti_id == '':
+        print('>>> User - Signup submit error: mbti_id is Empty')
+        return redirect('user_login')
+
+    if gender == '':
+        print('>>> User - Signup submit error: gender is Empty')
+        return redirect('user_login')
+
+    if birth_dt != '':
+        try:
+            datetime.strptime(birth_dt, '%Y-%m-%d')
+        except:
+            print('>>> User - Signup submit error: birth_dt format is incorrect')
+            return redirect('user_login')
+
+    User(user_id=user_id, name=name, pwd=pwd, mbti_id=mbti_id, gender=gender, birth_dt=birth_dt).save()
+    print('>>> User - Signup successful user_id:{}'.format(user_id))
+
+    return redirect('user_login')
 
 
 def info(request):

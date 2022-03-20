@@ -10,10 +10,10 @@ class User(models.Model):
     mbti_id = models.ForeignKey('mbti.Mbti', on_delete=models.PROTECT, db_column='mbti_id')
     birth_dt = models.DateField(null=True, blank=True)
     GENDER_CHOICES = (
-        ('M', 'Man'),
+        ('M', 'Male'),
         ('F', 'Female')
     )
-    gender = models.CharField(max_length=1, null=True, choices=GENDER_CHOICES )
+    gender = models.CharField(max_length=1, null=True, choices=GENDER_CHOICES)
     # gender = models.CharField(max_length=1)
     #
     # class Meta:
