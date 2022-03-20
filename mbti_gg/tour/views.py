@@ -61,7 +61,7 @@ def rmd_submit(request):
     try:  # Tour의 타이틀이 있다면 tour_liked table에 좋아요를 생성
         pk = Tour.objects.get(title=title)
         print('⛔️request check : ',pk)
-        tour_like = get_object_or_404(TourLiked, toury_id=pk)
+        tour_like = get_object_or_404(TourLiked, tour_id=pk)
         if tour_like.like_user.filter(user_id=uk).exists():
             print('⛔️ Exist title')
             tour_like.like_user.remove(uk)
