@@ -32,7 +32,13 @@
     </style>
 
 <body>
-
+    {% if messages %}
+    <script>
+    {% for msg in messages %}
+        alert('{{ msg }}');
+    {% endfor %}
+    </script>
+    {% endif %}
     <h1 align="center">CLICK ON YOUR MBTI</h1>
     <p style="margin:0px 0px 50px 0px"></p>
 

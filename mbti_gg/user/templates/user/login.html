@@ -4,17 +4,24 @@
 
 <html>
 <body>
+    {% if messages %}
+    <script>
+    {% for msg in messages %}
+        alert('{{ msg }}');
+    {% endfor %}
+    </script>
+    {% endif %}
     <div class="container">
         <h1 align="center">MBTI.gg 로그인</h1></p>
         <div class="form-group">
-            <form action="./login/submit" method="post">
+            <form action="./login" method="post">
                 {% csrf_token %}
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="floatingInput" name="user_id">
+                    <input type="text" class="form-control" value="{{user_id}}" name="user_id">
                     <label for="floatingInput">ID</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="password" class="form-control" id="floatingPassword" name="pwd">
+                    <input type="password" class="form-control" name="pwd">
                     <label for="floatingPassword">Password</label>
                 </div>
                 <button type="submit" class="btn btn-primary">로그인</button>
