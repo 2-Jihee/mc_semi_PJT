@@ -31,7 +31,7 @@ def index(request):
 
 # @login_required(login_url="../login") # 로그인 하지 않은 사용자가 접근하면 로그인 화면으로 이동
 def like(request):  
-    print('✅ GET Hobby Like Btn🚀')
+    print('✅ GET Movie Like Btn🚀')
     pk = request.POST.get('mk', None)
     ls = Movie.objects.get(movie_id=pk)
     uk = request.session.get('user_id')
@@ -95,7 +95,6 @@ def rmd_submit(request):
                     'like_count': like.total_like_user(),
                     'target_id': movie.movie_id
                 })
-        print(jsonAry)
         return JsonResponse(jsonAry, safe=False)
 
 
