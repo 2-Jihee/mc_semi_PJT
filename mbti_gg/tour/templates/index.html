@@ -1,0 +1,244 @@
+{% include 'header.html' %}
+
+{% block content %}
+<body>
+  <section class="py-5 text-center container bg-light">
+    <div class="row py-lg-5">
+      <div class="col-lg-6 col-md-8 mx-auto">
+        <h1 class="fw-light" style="text-transform:uppercase">{{selected_mbti}}</h1>
+        <p class="lead text-muted">{{mbti_table.profile}}</p>
+      </div>
+    </div>
+  </section>
+  <div class="album py-5">
+    <div class="container">
+      <div align=left">
+            <h3>홈페이지 추천</h3>
+      </div>
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        {% for tour in tour %}
+          {% if tour.mbti_id.mbti_id == selected_mbti%}
+            {% if tour.user_id.user_id == 'admin'%}
+              <div class="col">
+                <div class="card shadow-sm">
+                  <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false">
+                    <a href="{{tour.info}}">
+                      <image xlink:href="{{tour.photo}}" x="0"y="0" height="225" width="100%"/>
+                    </a>
+                  </svg>
+                  <div class="card-body">
+                    <p class="card-text">{{tour.title}}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="btn-group">
+                        <input type="button" name="{{tour.tour_id}}" class="btn like btn-sm btn-outline-secondary" value="HEART">
+                      </div>
+                      {% for like in likes%}
+                        {% if tour.tour_id == like.tour_id.tour_id%}
+                          <small class="text-muted count-{{tour.tour_id}}">{{like.like_user.all.count}}</small>
+                        {% endif%}
+                      {% endfor%}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="user_rmd py-5 container">
+    <div align=left">
+      <h3>회원 추천</h3>
+    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Content</th>
+          <th scope="col">Heart</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        {% for tour in tour %}
+          {% if tour.mbti_id.mbti_id == selected_mbti%}
+            {% if tour.user_id.user_id != 'admin'%}
+              <tr>
+                <th scope="row">{{tour.user_id.name}}</th>
+                <td>{{tour.title}}</td>
+                {% for like in likes%}
+                {% if tour.tour_id == like.tour_id.tour_id%}
+                <td class="rmd_count-{{tour.tour_id}}">{{like.like_user.all.count}}</td>
+                {%endif%}
+                {% endfor%}
+              </tr>
+            {%endif%}
+          {%endif%}
+        {% endfor%}
+      </tbody>
+    </table>
+    {%if user_mbti == selected_mbti and user_id != 'admin'%}
+    <div class="mb-3">
+      <label for="user_rmd" class="user_name form-label">{{user_name}}</label>
+      <input type="text" class="form-control" id="user_rmd">
+    </div>
+    <button type="submit" class="btn btn-primary like_submit">추천</button>
+    {%endif%}
+
+  </div>
+  <div class="tour_comment py-5 container" >
+    <div align=left">
+      <h3>댓글창</h3>
+    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Name / MBTI</th>
+          <th scope="col">Comment</th>
+        </tr>
+      </thead>
+      <input type="hidden" id="user_name" value="{{user_name}}"/>
+      <tbody id="cmt_body">
+      {% for cmt in cmts %}
+      {%if selected_mbti == cmt.mbti_id.mbti_id%}
+        <tr>
+          <th scope="row">{{cmt.user_id.name}} / {{cmt.user_id.mbti_id.mbti_id}}</th>
+          <td class="cmt_text">{{cmt.comment}}</td>
+          {%if cmt.user_id.name == user_name%}
+          <td>
+          <input type="button"
+                   onclick="javascript:delBtn({{cmt.h_cno}})"
+                   name="{{cmt.h_cno}}" class="btn btn-sm btn-outline-secondary" style="font-size:10px; border:none; position:absolute" value="del">
+          </td>
+          {%endif%}
+        </tr>
+      {% endif%}
+      {% endfor %}
+      </tbody>
+    </table>
+    <div class="mb-3">
+      <label for="user_comment" class="name form-label">{{user_name}}</label>
+      <input type="text" class="form-control" id="user_comment">
+    </div>
+    <button type="submit" class="btn cmt_btn btn-primary">등록</button>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script type="text/javascript">  // 관리자 추천 게시물 좋아요
+    $('.like').click(function(){
+      var hk = $(this).attr("name")
+      $.ajax({
+        url: './like_btn/',
+        type: 'POST',
+        data: {
+          'csrfmiddlewaretoken' : '{{csrf_token}}',
+          'hk' : hk
+        },
+        dataType: 'json',
+        success:function(response){
+          alert(response.message)
+          $('.count-'+hk).html(response.like_count)
+        }
+      });
+    })
+  </script>
+  <script type="text/javascript">  // 회원 추천 게시물 좋아요 및 게시물 입력
+    $('.like_submit').click(function(){
+      var title = $('#user_rmd').val();
+      $.ajax({
+        url: './like_submit/',
+        type: 'POST',
+        data: {
+          'csrfmiddlewaretoken' : '{{csrf_token}}',
+          'title' : title
+        },
+        dataType: 'json',
+        success:function(response){
+          if(response.message){
+            alert(response.message)
+            $('.rmd_count-'+response.target_id).html(response.like_count)
+            console.log(response.like_count)
+          }
+          else{
+            alert('게시물을 만들었습니다.')
+            $('#user_rmd').val('')
+            $('#tbody').empty()
+            var txt = ""
+            $.each(response, function(idx, data){
+              txt += "<tr><th scope = 'row'>"+data.user_name+"</th>"
+              txt += "<td>"+data.title+"</td>"
+              txt += "<td class=rmd_count-"+data.target_id+">"+data.like_count+"</td>"
+              txt += "</tr>"
+            })
+            $('#tbody').append(txt)
+          }
+        },
+        error:function(){
+          alert("결과값 오류")
+        }
+      });
+    })
+  </script>
+  <script type="text/javascript"> // cmt
+      $('.cmt_btn').click(function(){
+        window.alert('입력완료')
+        var cmt = $('#user_comment').val()
+        var s_mbti= $('.fw-light').text()
+        $.ajax({
+          url: './create_cmt/',
+          type: 'POST',
+          data: {
+            'csrfmiddlewaretoken' : '{{csrf_token}}',
+            'cmt' : cmt,
+            's_mbti' : s_mbti
+          },
+          dataType: 'json',
+          success:function(response){
+            $('#user_comment').val('')
+            $('#cmt_body').empty()
+            var txt = ""
+            $.each(response, function(idx, data){
+              txt += "<tr><th scope = 'row'>"+data.name+" / "+data.mbti+"</th>"
+              txt += "<td class='cmt_text'>"+data.cmt+"</td>"
+              if($('#user_name').val() == data.name){
+                txt += "<td><input type='button' onclick='javascript:delBtn("+data.h_cno+")' name='"+data.h_cno+"' class='btn cmt_del btn-sm btn-outline-secondary' style='font-size:10px; border:none;position:absolute' value='del'></td>"
+              }
+              txt += "</tr>"
+            })
+            $('#cmt_body').append(txt)
+          }
+        })
+      })
+  </script>
+  <script type="text/javascript"> // cmt delete
+    function delBtn(h_cno) {
+      alert('댓글을 삭제했습니다.')
+      var s_mbti= $('.fw-light').text()
+      $.ajax({
+        url : './cmt_del/',
+        type : 'POST',
+        data : {
+          'csrfmiddlewaretoken' : '{{csrf_token}}',
+          'h_cno' : h_cno,
+          's_mbti' : s_mbti
+        },
+        dataType : 'json',
+        success : function(response){
+          $('#cmt_body').empty()
+          var txt = ""
+          $.each(response, function(idx, data){
+            txt += "<tr><th scope = 'row'>"+data.name+" / "+data.mbti+"</th>"
+            txt += "<td class='cmt_text'>"+data.cmt+"</td>"
+            if($('#user_name').val() == data.name){
+              txt += "<td><input type='button' onclick='javascript:delBtn("+data.h_cno+")' name='"+data.h_cno+"' class='btn cmt_del btn-sm btn-outline-secondary' style='font-size:10px; border:none;position:absolute' value='del'></td>"
+            }
+            txt += "</tr>"
+          })
+          $('#cmt_body').append(txt)
+        }
+      })
+    }
+  </script>
+</body>
+{% endblock %}
+
+{% include 'footer.html'%}
