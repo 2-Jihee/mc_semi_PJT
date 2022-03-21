@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'home',
     'mbti',
     'movie',
-    'place',
     'hobby',
     'notice',
     'check',

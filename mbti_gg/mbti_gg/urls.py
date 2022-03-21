@@ -23,7 +23,6 @@ urlpatterns = [
     path('home/', include('home.urls')),
     path('mbti/', include('mbti.urls')),
     path('movie/', include('movie.urls')),
-    path('place/', include('place.urls')),
     path('hobby/', include('hobby.urls')),
     path('user/', include('user.urls')),
     path('notice/', include('notice.urls')),
