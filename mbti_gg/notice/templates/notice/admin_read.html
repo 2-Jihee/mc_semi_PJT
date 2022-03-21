@@ -9,6 +9,14 @@
     <meta charset="UTF-8">
     <title>MBTI.gg: {{title}}</title>
 </head>
+<style>
+    body {
+        -ms-overflow-style: none;     /* IE, Edge */
+    }
+    ::-webkit-scrollbar {
+        display: none;                /* Chrome, Safari, Opera */
+    }
+</style>
 <body>
     <div class="container">
         <fieldset>
@@ -21,13 +29,10 @@
             <div>
                 <label class="col-form-label mt-4">작성자</label>
                     <input type="text" class="form-control" name="writer"id ='writer' value="{{n_board.writer}}" readonly >
-                    <!-- 일단 readonly 관리자의 수에 따라 작성자를 고정으로 할지 세션을 추가할지 생각해보기 -->
             </div>
             <div>
                 <label class="col-form-label mt-4">내용</label>
-                    <textarea class="form-control" name="content" id="content" rows="3" style="height: 387px;">
-                        {{n_board.content}}
-                    </textarea>
+                    <textarea class="form-control" name="content" id="content" rows="3" style="height: 387px;">{{n_board.content}}</textarea>
             </div>
             </p>
             <div class="row" align="right">
