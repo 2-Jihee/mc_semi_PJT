@@ -4,11 +4,11 @@ from mbti.models import *
 
 # Create your models here.
 
-
 class Tour(models.Model):
     tour_id = models.BigAutoField(primary_key=True)
     title = models.CharField(max_length=50)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE, db_column='user_id', default='admin')
+    mbti_id = models.ForeignKey(Mbti, db_column='mbti_id', on_delete=models.CASCADE, null=True)
     info = models.TextField(null=True, blank=True)
     photo = models.TextField(null=True, blank=True)
 
